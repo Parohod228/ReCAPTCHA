@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Infinite Loading Screen</title>
+    <title>Перевірка завантаження</title>
     <style>
-      #failCounter1, #failCounter2, #failCounter3{display: none;}
+      #failCounter1, #failCounter2, #failCounter3, #failCounter4{display: none;}
         html, body {
             height: 100%;
             margin: 0;
@@ -240,7 +240,73 @@
         #btnHuman {
             position: absolute;
             transition: background 0s;
-            /* решта стилів залишаються як у вас */
+        }
+        
+        /* Додано стилі для гри "Пошук слів" */
+        .word-search-container {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+        }
+        .word-search-grid {
+            display: grid;
+            /* Змінено розмір сітки з 12x12 на 10x10 */
+            grid-template-columns: repeat(10, 32px);
+            grid-template-rows: repeat(10, 32px);
+            gap: 2px;
+            position: relative;
+            user-select: none;
+        }
+        .word-search-cell {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+            background: #f5f5f5;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            /* Додати transition для плавної зміни кольору */
+            transition: background-color 0.3s ease;
+        }
+        /* Додати клас для знайдених клітинок */
+        .word-search-cell.found {
+            color: #fff;
+            font-weight: bold;
+        }
+        .word-search-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .word-list {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .word-item {
+            padding: 6px 12px;
+            background: #f1f3f4;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #555;
+            transition: all 0.3s;
+        }
+        .word-item.found {
+            background: #34a853;
+            color: #fff;
+            text-decoration: line-through;
         }
     </style>
 </head>
@@ -251,112 +317,157 @@
         </div>
         <div id="captchaFake" class="captcha-fake" tabindex="0" style="display:none;">
             <div id="captchaCheckbox" class="captcha-checkbox"></div>
-            <span class="captcha-fake-label">I'm not a robot</span>
+            <span class="captcha-fake-label">Я не робот</span>
             <img class="captcha-fake-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
         </div>
     </div>
+    
+    <!-- Модальне вікно лабіринту перекладено українською -->
     <div class="captcha-modal" id="captchaModal">
         <div class="captcha-window">
-            <button class="captcha-close" id="closeCaptcha" aria-label="Close">&times;</button>
+            <button class="captcha-close" id="closeCaptcha" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <div class="captcha-title">I'm not a robot</div>
-                <div id="failCounter1" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Fails: 0</div>
+                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
+                <div class="captcha-title">ReCaptcha</div>
+                <div id="failCounter1" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Помилок: 0</div>
             </div>
             <div class="captcha-content">
-                <div style="font-size:13px;color:#555;margin-bottom:10px;">Navigate the blue square to the green square using arrow keys or AWSD.</div>
+                <div style="font-size:13px;color:#555;margin-bottom:10px;">Проведіть синій квадрат до зеленого, використовуючи стрілки або WASD/ФЦІВ.</div>
                 <div class="maze-container">
                     <div class="maze" id="maze"></div>
                 </div>
-                <div id="captchaSuccess" class="captcha-success" style="display:none;">Success!</div>
-                <div id="captchaFail" class="captcha-fail" style="display:none;">You've lost. Try one more time.</div>
+                <div id="captchaSuccess" class="captcha-success" style="display:none;">Успіх!</div>
+                <div id="captchaFail" class="captcha-fail" style="display:none;">Ви програли. Спробуйте ще раз.</div>
             </div>
             <div class="captcha-footer">
-                <span style="font-size:11px;color:#888;">This page is protected by reCAPTCHA</span>
+                <span style="font-size:11px;color:#888;">Ця сторінка захищена reCAPTCHA</span>
             </div>
         </div>
     </div>
+    
+    <!-- Модальне вікно Simon перекладено українською -->
     <div class="captcha-modal" id="captchaSimonModal" style="display:none;">
         <div class="captcha-window">
-            <button class="captcha-close" id="closeSimon" aria-label="Close">&times;</button>
+            <button class="captcha-close" id="closeSimon" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <div class="captcha-title">Memory Signal Puzzle</div>
-                <div id="failCounter2" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Fails: 0</div>
+                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
+                <div class="captcha-title">ReCaptcha</div>
+                <div id="failCounter2" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Помилок: 0</div>
             </div>
             <div class="captcha-content">
                 <div style="font-size:13px;color:#555;margin-bottom:10px;">
-                    Remember the sequence! Repeat the pattern by clicking the squares in the same order.
+                    Запам'ятайте послідовність! Повторіть шаблон, натискаючи квадрати в тому ж порядку.
                 </div>
                 <div id="simonGrid" style="display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:10px;justify-content:center;margin:0 auto 10px auto;"></div>
-                <div id="simonStatus" style="font-size:15px;color:#34a853;display:none;margin-top:10px;">You win!</div>
-                <div id="simonFail" style="font-size:15px;color:#ea4335;display:none;margin-top:10px;">Wrong! Try again.</div>
-                <button id="simonRestart" style="display:none;margin-top:10px;">Restart</button>
+                <div id="simonStatus" style="font-size:15px;color:#34a853;display:none;margin-top:10px;">Ви перемогли!</div>
+                <div id="simonFail" style="font-size:15px;color:#ea4335;display:none;margin-top:10px;">Неправильно! Спробуйте знову.</div>
+                <button id="simonRestart" style="display:none;margin-top:10px;">Перезапустити</button>
             </div>
             <div class="captcha-footer">
-                <span style="font-size:11px;color:#888;">This page is protected by reCAPTCHA</span>
+                <span style="font-size:11px;color:#888;">Ця сторінка захищена reCAPTCHA</span>
             </div>
         </div>
     </div>
+    
+    <!-- Модальне вікно хрестиків-ноликів перекладено українською -->
     <div class="captcha-modal" id="captchaTicTacToeModal" style="display:none;">
         <div class="captcha-window">
-            <button class="captcha-close" id="closeTicTacToe" aria-label="Close">&times;</button>
+            <button class="captcha-close" id="closeTicTacToe" aria-label="Закрити">&times;</button>
             <div class="captcha-header" style="position:relative;">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <div class="captcha-title">Tic-Tac-Toe</div>
+                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
+                <div class="captcha-title">ReCaptcha</div>
                 <div id="failCounter3"
                     style="display:none;position:absolute;top:44px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;z-index:2;">
-                    Fails: 0
+                    Помилок: 0
                 </div>
             </div>
             <div class="captcha-content">
                 <div style="font-size:13px;color:#555;margin-bottom:10px;">
-                    Win against the AI in 3 attempts! You start first. In case of a draw, the starter switches.
+                    Переможіть ШІ за 3 спроби! Ви ходите першим. У разі нічиєї, стартуючий змінюється.
                 </div>
                 <div id="tttGrid" style="display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:10px;justify-content:center;margin:0 auto 10px auto;"></div>
                 <div id="tttStatus" style="font-size:15px;color:#34a853;display:none;margin-top:10px;"></div>
                 <div id="tttFail" style="font-size:15px;color:#ea4335;display:none;margin-top:10px;"></div>
-                <button id="tttRestart" style="display:none;margin-top:10px;">Next round</button>
+                <button id="tttRestart" style="display:none;margin-top:10px;">Наступний раунд</button>
             </div>
             <div class="captcha-footer">
-                <span style="font-size:11px;color:#888;">This page is protected by reCAPTCHA</span>
+                <span style="font-size:11px;color:#888;">Ця сторінка захищена reCAPTCHA</span>
             </div>
         </div>
     </div>
-    <div class="captcha-modal" id="captchaFinalModal" style="display:none;">
-        <div class="captcha-window">
-            <button class="captcha-close" id="closeFinal" aria-label="Close">&times;</button>
+    
+    <!-- Додано нове модальне вікно для гри "Пошук слів" -->
+    <div class="captcha-modal" id="captchaWordSearchModal" style="display:none;">
+        <div class="captcha-window" style="width: 420px;">
+            <button class="captcha-close" id="closeWordSearch" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <div class="captcha-title">Final Check</div>
+                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
+                <div class="captcha-title">ReCaptcha</div>
+                <div id="failCounter4" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Помилок: 0</div>
             </div>
             <div class="captcha-content">
-                <div style="font-size:16px;color:#222;font-weight:bold;margin-bottom:24px;">Are you a human?</div>
+                <!-- Оновлено текст інструкції - видалено згадку про діагональні слова -->
+                <div style="font-size:13px;color:#555;margin-bottom:10px;">
+                    Знайдіть всі 5 слів у сітці. Слова можуть бути горизонтальними або вертикальними.
+                </div>
+                <div class="word-search-container">
+                    <canvas id="wordSearchCanvas" class="word-search-overlay"></canvas>
+                    <div id="wordSearchGrid" class="word-search-grid"></div>
+                </div>
+                 <!-- Повернути список слів замість лічильника -->
+                <div id="wordList" class="word-list"></div>
+                <div id="wordSearchSuccess" class="captcha-success" style="display:none;">Вітаємо! Ви знайшли всі слова!</div>
+                <div id="wordSearchFail" class="captcha-fail" style="display:none;">Спробуйте ще раз!</div>
+            </div>
+            <div class="captcha-footer">
+                <span style="font-size:11px;color:#888;">Ця сторінка захищена reCAPTCHA</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Фінальне модальне вікно перекладено українською -->
+    <div class="captcha-modal" id="captchaFinalModal" style="display:none;">
+        <div class="captcha-window">
+            <button class="captcha-close" id="closeFinal" aria-label="Закрити">&times;</button>
+            <div class="captcha-header">
+                <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
+                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
+                <div class="captcha-title">ReCaptcha</div>
+            </div>
+            <div class="captcha-content">
+                <div style="font-size:16px;color:#222;font-weight:bold;margin-bottom:24px;">Ви людина?</div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
-                    <button id="btnRobot" class="final-btn" style="width:180px;">I am robot</button>
-                    <button id="btnHuman" class="final-btn" style="width:180px;position:relative;">I am human</button>
+                    <button id="btnRobot" class="final-btn" style="width:180px;">Я робот</button>
+                    <button id="btnHuman" class="final-btn" style="width:180px;position:relative;">Я людина</button>
                 </div>
             </div>
             <div class="captcha-footer">
-                <span style="font-size:11px;color:#888;">This page is protected by reCAPTCHA</span>
+                <span style="font-size:11px;color:#888;">Ця сторінка захищена reCAPTCHA</span>
             </div>
         </div>
     </div>
 
     <script>
+        
         // Управління WASD (UA/EN) та ФЦІВ (UA)
         const moveKeys = {
             // English
-            'w': {dx:0, dy:-1},   // W - вгору
-            'a': {dx:-1, dy:0},   // A - вліво
-            's': {dx:0, dy:1},    // S - вниз
-            'd': {dx:1, dy:0},    // D - вправо
+            'w': {dx:0, dy:-1},
+            'a': {dx:-1, dy:0},
+            's': {dx:0, dy:1},
+            'd': {dx:1, dy:0},
             // Українська ФЦІВ
-            'ф': {dx:-1, dy:0},   // Ф - вліво
-            'ц': {dx:0, dy:-1},   // Ц - вгору
-            'і': {dx:0, dy:1},    // І - вниз
-            'в': {dx:1, dy:0},    // В - вправо
+            'ф': {dx:-1, dy:0},
+            'ц': {dx:0, dy:-1},
+            'і': {dx:0, dy:1},
+            'в': {dx:1, dy:0},
         };
+        
+        
         // Генерація лабіринту
         function generateMaze(width, height) {
             let maze = Array.from({length: height}, () => Array(width).fill(0));
@@ -379,7 +490,6 @@
             return maze;
         }
 
-        // Менший лабіринт
         const MAZE_SIZE = 21;
         let mazeData = generateMaze(MAZE_SIZE, MAZE_SIZE);
         let playerPos = {x:1, y:1};
@@ -398,8 +508,50 @@
             maze.innerHTML = '';
             let viewSize = 15;
             let half = Math.floor(viewSize/2);
-            let startY = Math.max(0, playerPos.y - half);
-            let startX = Math.max(0, playerPos.x - half);
+            
+            // Обчислити бажану позицію камери
+            let startX = playerPos.x - half;
+            let startY = playerPos.y - half;
+            let endX = playerPos.x + half;
+            let endY = playerPos.y + half;
+            
+            // Обмежити view до меж лабіринту [0, 20]
+            if (startX < 0) {
+                startX = 0;
+                endX = viewSize - 1;
+            }
+            if (startY < 0) {
+                startY = 0;
+                endY = viewSize - 1;
+            }
+            if (endX > MAZE_SIZE - 1) {
+                endX = MAZE_SIZE - 1;
+                startX = MAZE_SIZE - viewSize;
+            }
+            if (endY > MAZE_SIZE - 1) {
+                endY = MAZE_SIZE - 1;
+                startY = MAZE_SIZE - viewSize;
+            }
+            
+            // Зупинити камеру коли гравець за 2 блоки від краю
+            // Ліва межа: якщо гравець на позиції 2 або менше, камера не рухається лівіше
+            if (playerPos.x <= 2) {
+                startX = 0;
+            }
+            // Права межа: якщо гравець на позиції 18 або більше, камера не рухається правіше
+            if (playerPos.x >= MAZE_SIZE - 3) {
+                startX = MAZE_SIZE - viewSize;
+            }
+            // Верхня межа: якщо гравець на позиції 2 або менше, камера не рухається вище
+            if (playerPos.y <= 2) {
+                startY = 0;
+            }
+            // Нижня межа: якщо гравець на позиції 18 або більше, камера не рухається нижче
+            if (playerPos.y >= MAZE_SIZE - 3) {
+                startY = MAZE_SIZE - viewSize;
+            }
+            // </CHANGE>
+            
             maze.style.gridTemplateColumns = `repeat(${viewSize}, 16px)`;
             maze.style.gridTemplateRows = `repeat(${viewSize}, 16px)`;
             for(let y=0; y<viewSize; y++) {
@@ -423,14 +575,12 @@
             drawMaze();
         }
 
-        // --- Лабіринт: якщо торкнувся стінки — фейл і старт з початку ---
         function isValidMove(x, y) {
             return x >= 0 && y >= 0 && y < mazeData.length && x < mazeData[0].length && mazeData[y][x] !== 0;
         }
 
         function movePlayerTo(x, y) {
             if (mazeData[y][x] === 0) {
-                // Торкнувся стінки — фейл і рестарт
                 document.getElementById('captchaFail').style.display = 'block';
                 setTimeout(() => {
                     document.getElementById('captchaFail').style.display = 'none';
@@ -453,27 +603,21 @@
                 setTimeout(() => {
                     document.getElementById('captchaModal').style.display = 'none';
                     isModalActive = false;
-                    // Відкрити Simon/Memory Game
                     document.getElementById('captchaSimonModal').style.display = 'flex';
                     startSimonGame();
                 }, 1000);
             }
         }
 
-        // Лічильники програшів
-        let failCount1 = 0, failCount2 = 0, failCount3 = 0;
+        let failCount1 = 0, failCount2 = 0, failCount3 = 0, failCount4 = 0;
 
         function updateFailCounters() {
-            document.getElementById('failCounter1').textContent = `Fails: ${failCount1}`;
-            document.getElementById('failCounter2').textContent = `Fails: ${failCount2}`;
-            document.getElementById('failCounter3').textContent = `Fails: ${failCount3}`;
+            document.getElementById('failCounter1').textContent = `Помилок: ${failCount1}`;
+            document.getElementById('failCounter2').textContent = `Помилок: ${failCount2}`;
+            document.getElementById('failCounter3').textContent = `Помилок: ${failCount3}`;
+            document.getElementById('failCounter4').textContent = `Помилок: ${failCount4}`;
         }
 
-        // --- Лабіринт: першим ходить бот ---
-        // Для лабіринту це просто: гравець стартує, але можна додати затримку перед появою гравця, якщо треба.
-        // (В даній реалізації просто стартує гравець, бо бот не потрібен.)
-
-        // --- Лабіринт: програш = перезавантаження ---
         function failCaptcha() {
             failCount1++;
             updateFailCounters();
@@ -483,7 +627,6 @@
             }, 1200);
         }
 
-        // --- Simon: програш = перезавантаження ---
         function simonFailReload() {
             failCount2++;
             updateFailCounters();
@@ -504,14 +647,13 @@
             "#e0e0e0", "#e0e0e0", "#e0e0e0",
             "#e0e0e0", "#e0e0e0", "#e0e0e0"
         ];
-        const simonActiveColor = "#4285f4"; // синій для миготіння
+        const simonActiveColor = "#4285f4";
 
         function randomSimonCell() {
             return Math.floor(Math.random() * 9);
         }
 
         function startSimonGame() {
-            // Reset
             simonSequence = [randomSimonCell()];
             simonStep = 0;
             simonActive = true;
@@ -522,22 +664,17 @@
             showSimonSequence();
         }
 
-        // --- ОБМЕЖЕННЯ НА 6 КЛІПАНЬ ---
         function showSimonSequence() {
             simonClickable = false;
             let i = 0;
-            // Підрахунок кліпань для кожного квадратика
             let clickCounts = Array(9).fill(0);
             for (let idx of simonSequence) clickCounts[idx]++;
-            // Якщо вже 6 кліпань — не додаємо новий
             if (simonSequence.length > 1) {
                 let totalClips = simonSequence.length;
                 if (totalClips >= 6) {
-                    // Гра завершена перемогою
-                    document.getElementById('simonStatus').textContent = "You win!";
+                    document.getElementById('simonStatus').textContent = "Ви перемогли!";
                     document.getElementById('simonStatus').style.display = 'block';
                     simonActive = false;
-                    // Замість рестарту одразу відкриваємо хрестики-нолики
                     setTimeout(() => {
                         document.getElementById('captchaSimonModal').style.display = 'none';
                         openTicTacToeAfterSimon();
@@ -548,7 +685,7 @@
             function highlight() {
                 if(i < simonSequence.length) {
                     let idx = simonSequence[i];
-                    simonGrid[idx].style.background = simonActiveColor; // СИНІЙ!
+                    simonGrid[idx].style.background = simonActiveColor;
                     setTimeout(() => {
                         simonGrid[idx].style.background = simonColors[idx];
                         i++;
@@ -586,7 +723,7 @@
                             for (let idx of simonSequence) clickCounts[idx]++;
                             let totalClips = simonSequence.length;
                             if (totalClips >= 6) {
-                                document.getElementById('simonStatus').textContent = "You win!";
+                                document.getElementById('simonStatus').textContent = "Ви перемогли!";
                                 document.getElementById('simonStatus').style.display = 'block';
                                 simonActive = false;
                                 setTimeout(() => {
@@ -617,7 +754,7 @@
         // --- Tic-Tac-Toe ---
         let tttBoard, tttHuman, tttAI, tttCurrent, tttAttempts, tttHumanWins, tttStarter, tttGameActive;
 
-        function resetTicTacToe(starter = "ai") { // Першим ходить бот
+        function resetTicTacToe(starter = "ai") {
             tttBoard = Array(9).fill("");
             tttHuman = "X";
             tttAI = "O";
@@ -648,7 +785,6 @@
                 cell.style.justifyContent = "center";
                 cell.style.fontSize = "32px";
                 cell.style.fontWeight = "bold";
-                // Кольори: X - червоний, O - синій
                 if (tttBoard[i] === "X") {
                     cell.style.color = "#ea4335";
                 } else if (tttBoard[i] === "O") {
@@ -665,13 +801,13 @@
                     if(checkTicTacToeWin(tttHuman)) {
                         tttHumanWins++;
                         tttGameActive = false;
-                        document.getElementById('tttStatus').textContent = `You win! (${tttHumanWins}/${tttAttempts} wins)`;
+                        document.getElementById('tttStatus').textContent = `Ви перемогли! (${tttHumanWins}/${tttAttempts} перемог)`;
                         document.getElementById('tttStatus').style.display = 'block';
                         document.getElementById('tttRestart').style.display = 'block';
                         checkTicTacToeEnd();
                     } else if(tttBoard.every(cell => cell !== "")) {
                         tttGameActive = false;
-                        document.getElementById('tttStatus').textContent = "Draw!";
+                        document.getElementById('tttStatus').textContent = "Нічия!";
                         document.getElementById('tttStatus').style.display = 'block';
                         document.getElementById('tttRestart').style.display = 'block';
                     } else {
@@ -682,21 +818,17 @@
             }
         }
 
-        // --- AI with mistakes ---
         function aiMove() {
             if(!tttGameActive) return;
-            // 60% шанс зробити кращий хід, 40% - випадковий хід
             let move;
             if (Math.random() < 0.6) {
                 move = findBestMove(tttAI) || findBestMove(tttHuman);
                 if (move === null || move === undefined) {
-                    // Вибрати випадкову вільну клітинку
                     let free = [];
                     for(let i=0;i<9;i++) if(tttBoard[i]==="") free.push(i);
                     move = free[Math.floor(Math.random()*free.length)];
                 }
             } else {
-                // Випадковий хід
                 let free = [];
                 for(let i=0;i<9;i++) if(tttBoard[i]==="") free.push(i);
                 move = free[Math.floor(Math.random()*free.length)];
@@ -706,20 +838,19 @@
             drawTicTacToe();
             if(checkTicTacToeWin(tttAI)) {
                 tttGameActive = false;
-                document.getElementById('tttFail').textContent = `AI wins! (${tttHumanWins}/${tttAttempts} wins)`;
+                document.getElementById('tttFail').textContent = `ШІ переміг! (${tttHumanWins}/${tttAttempts} перемог)`;
                 document.getElementById('tttFail').style.display = 'block';
                 document.getElementById('tttRestart').style.display = 'block';
                 checkTicTacToeEnd();
             } else if(tttBoard.every(cell => cell !== "")) {
                 tttGameActive = false;
-                document.getElementById('tttStatus').textContent = "Draw!";
+                document.getElementById('tttStatus').textContent = "Нічия!";
                 document.getElementById('tttStatus').style.display = 'block';
                 document.getElementById('tttRestart').style.display = 'block';
             }
         }
 
         function findBestMove(player) {
-            // Return index to win/block if possible
             const wins = [
                 [0,1,2],[3,4,5],[6,7,8],
                 [0,3,6],[1,4,7],[2,5,8],
@@ -746,16 +877,16 @@
 
         function checkTicTacToeEnd() {
             if(tttHumanWins >= 1) {
-                document.getElementById('tttStatus').textContent = "Congratulations! You beat the AI!";
+                document.getElementById('tttStatus').textContent = "Вітаємо! Ви перемогли ШІ!";
                 document.getElementById('tttRestart').style.display = 'none';
                 setTimeout(() => {
                     document.getElementById('captchaTicTacToeModal').style.display = 'none';
-                    openFinalModal();
+                    openWordSearchGame();
                 }, 1500);
             } else if(tttAttempts >= 3) {
                 failCount3++;
                 updateFailCounters();
-                document.getElementById('tttFail').textContent = "No more attempts! Try again later.";
+                document.getElementById('tttFail').textContent = "Більше немає спроб! Спробуйте пізніше.";
                 document.getElementById('tttRestart').style.display = 'none';
                 setTimeout(() => {
                     location.reload();
@@ -765,9 +896,8 @@
 
         document.getElementById('tttRestart').onclick = function() {
             tttAttempts++;
-            // If draw, switch starter
             let lastStarter = tttStarter;
-            if(document.getElementById('tttStatus').textContent === "Draw!") {
+            if(document.getElementById('tttStatus').textContent === "Нічия!") {
                 tttStarter = (tttStarter === "human") ? "ai" : "human";
             }
             resetTicTacToe(tttStarter);
@@ -777,17 +907,330 @@
             tttGameActive = false;
         };
 
-        // --- Відкриття гри після Simon ---
         function openTicTacToeAfterSimon() {
             tttAttempts = 1;
             tttHumanWins = 0;
-            tttStarter = "ai"; // Перший раунд: бот ходить першим
+            tttStarter = "ai";
             resetTicTacToe(tttStarter);
             document.getElementById('captchaTicTacToeModal').style.display = 'flex';
         }
 
+        let wordSearchGrid = [];
+        let wordSearchWords = [];
+        let wordSearchFoundWords = [];
+        let wordSearchSelecting = false;
+        let wordSearchSelection = [];
+        let wordSearchCanvas, wordSearchCtx;
+        let wordSearchWordColors = {};
+        
+        const ukrainianLetters = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЮЯ';
+        const brightColors = [
+            '#FF9A56', // яскравий помаранчевий
+            '#FF6B9D', // коралово-рожевий
+            '#4ECDC4', // бірюзовий
+            '#A78BFA', // фіолетовий
+            '#FCD34D'  // золотистий
+        ];
+        
+        const commonWords = [
+            // 4 букви
+            'ЗОРЯ', 'ВОДА', 'НЕБО', 'ПОЛЕ', 'ГОРА',
+            'ДРУГ', 'УРОК', 'МЕТА', 'ВІРА', 'ДОЛЯ',
+            'ДЕНЬ', 'ПТАХ', 'ЗВІР', 'РИБА', 'ЗВУК',
+            'СНІГ', 'ГРАД', 'ШЛЯХ', 'ВІРШ', 'РИМА',
+            'СЕЛО', 'ЛІС', 'МОРЕ', 'ОЗЕРО', 'РІЧКА',
+            'ЗИМА', 'ЛІТО', 'НІЖЬ', 'ВОЛЯ', 'СИЛА',
+            'МАТИ', 'ДІТИ', 'РУКА', 'НОГА', 'ТІЛО',
+            'ХЛІБ', 'СІЛЬ', 'ВИНО', 'ПИВО', 'КАВА',
+            'СТІЛ', 'СТУЛ', 'ДВІР', 'ПАРК', 'СКВЕР',
+            // 5 букв
+            'ЛЮБОВ', 'МРІЯ', 'СЛОВО', 'ЗЕМЛЯ', 'ВІТЕР',
+            'КНИГА', 'ТАНЕЦЬ', 'ПІСНЯ', 'СОНЦЕ', 'МІСЯЦЬ',
+            'ХМАРА', 'ВЕСНА', 'ОСІНЬ', 'КВІТКА', 'ДЕРЕВО',
+            'КРИЛО', 'КОЛІР', 'БАРВА', 'ГОЛОС', 'ЗАПАХ',
+            'ТЕПЛО', 'ХОЛОД', 'МОРОЗ', 'ТУМАН', 'ХВИЛЯ',
+            'ПОТІК', 'КАЗКА', 'ОБРАЗ', 'ШКОЛА', 'ДУМКА',
+            'ІДЕЯ', 'НАДІЯ', 'ЩАСТЯ', 'ЖИТТЯ', 'СВІТЛО',
+            'ПРАВДА', 'ЧЕСТЬ', 'СЛАВА', 'НАРОД', 'МІСТО',
+            'РАНОК', 'ВЕЧІР', 'ЗІРКА', 'ІСКРА', 'СКЕЛЯ',
+            'ПІСОК', 'ТРАВА', 'ЛИСТЯ', 'ГІЛКА', 'КАМІНЬ',
+            'ВОГОНЬ', 'ГРІМ', 'ДОРОГА', 'ВУЛИЦЯ', 'БУДИНОК',
+            // 6 букв
+            'ПОШУК', 'МУЗИКА', 'РАДІСТЬ', 'ДИТИНА', 'БАТЬКО',
+            'РОБОТА', 'СПРАВА', 'УСПІХ', 'ЗНАННЯ', 'КРАЇНА', 'СВОБОДА',
+            'КОСМОС', 'ПЛАНЕТА', 'КОРІНЬ', 'ПТАШКА', 'ТВАРИНА',
+            'КОМАХА', 'БДЖОЛА', 'АРОМАТ', 'ПАХОЩІ', 'МЕЛОДІЯ',
+            'СТЕЖКА', 'МАНДРИ', 'ЛЕГЕНДА', 'ІСТОРІЯ', 'ПОЕЗІЯ',
+            'КАРТИНА', 'МАЛЮНОК', 'УЧЕНЬ', 'ВЧИТЕЛЬ'
+        ].filter(word => word.length >= 4 && word.length <= 6);
+        
+        const biologicalTerms = [
+            // 4 букви
+            'ГЕНОМ', 'МІТОЗ',
+            // 5 букв
+            'БІЛОК', 'НЕЙРОН', 'ВІРУС',
+            // 6 букв
+            'КЛІТИНА', 'СИНАПС', 'МУТАЦІЯ'
+        ].filter(word => word.length >= 4 && word.length <= 6);
+        
+        function getRandomLetter() {
+            return ukrainianLetters[Math.floor(Math.random() * ukrainianLetters.length)];
+        }
+        
+        
+        function openWordSearchGame() {
+            document.getElementById('captchaWordSearchModal').style.display = 'flex';
+            initWordSearch();
+        }
+        
+        function initWordSearch() {
+            wordSearchGrid = Array(10).fill(null).map(() => Array(10).fill(''));
+            
+            const shuffledBio = [...biologicalTerms].sort(() => Math.random() - 0.5);
+            const shuffledCommon = [...commonWords].sort(() => Math.random() - 0.5);
+            
+            const numBioWords = Math.min(2, Math.floor(Math.random() * 3)); // 0, 1, або 2
+            const numCommonWords = 5 - numBioWords;
+            
+            wordSearchWords = [
+                ...shuffledBio.slice(0, numBioWords),
+                ...shuffledCommon.slice(0, numCommonWords)
+            ];
+            // </CHANGE>
+            
+            wordSearchFoundWords = [];
+            wordSearchSelection = [];
+            wordSearchWordColors = {};
+            wordSearchWords.forEach((word, index) => {
+                wordSearchWordColors[word] = brightColors[index % brightColors.length];
+            });
+            
+            // Розмістити слова
+            for (let word of wordSearchWords) {
+                placeWord(word);
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                for (let j = 0; j < 10; j++) {
+                    if (wordSearchGrid[i][j] === '') {
+                        wordSearchGrid[i][j] = getRandomLetter();
+                    }
+                }
+            }
+            // </CHANGE>
+            
+            drawWordSearchGrid();
+            drawWordList();
+            setupCanvas();
+        }
+        
+        function placeWord(word) {
+            const directions = [
+                {dx: 1, dy: 0},   // горизонтально вправо
+                {dx: 0, dy: 1},   // вертикально вниз
+            ];
+            
+            let placed = false;
+            let attempts = 0;
+            
+            while (!placed && attempts < 100) {
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                const startRow = Math.floor(Math.random() * 10);
+                const startCol = Math.floor(Math.random() * 10);
+                // </CHANGE>
+                
+                if (canPlaceWord(word, startRow, startCol, dir)) {
+                    for (let i = 0; i < word.length; i++) {
+                        const row = startRow + i * dir.dy;
+                        const col = startCol + i * dir.dx;
+                        wordSearchGrid[row][col] = word[i];
+                    }
+                    placed = true;
+                }
+                attempts++;
+            }
+        }
+        
+        function canPlaceWord(word, startRow, startCol, dir) {
+            for (let i = 0; i < word.length; i++) {
+                const row = startRow + i * dir.dy;
+                const col = startCol + i * dir.dx;
+                
+                if (row < 0 || row >= 10 || col < 0 || col >= 10) {
+                    return false;
+                }
+                // </CHANGE>
+                
+                if (wordSearchGrid[row][col] !== '' && wordSearchGrid[row][col] !== word[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        function drawWordSearchGrid() {
+            const grid = document.getElementById('wordSearchGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                for (let j = 0; j < 10; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'word-search-cell';
+                    cell.textContent = wordSearchGrid[i][j];
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    cell.addEventListener('mousedown', startSelection);
+                    cell.addEventListener('mouseenter', continueSelection);
+                    cell.addEventListener('mouseup', endSelection);
+                    
+                    grid.appendChild(cell);
+                }
+            }
+            // </CHANGE>
+        }
+
+        function startSelection(e) {
+            wordSearchSelecting = true;
+            wordSearchSelection = [];
+            const row = parseInt(e.target.dataset.row);
+            const col = parseInt(e.target.dataset.col);
+            wordSearchSelection.push({row, col, letter: wordSearchGrid[row][col]});
+            
+            // Тимчасово підсвітити першу клітинку
+            const tempColor = '#D1D5DB'; // сірий для тимчасового виділення
+            highlightCells(wordSearchSelection, tempColor, true);
+        }
+        
+        function continueSelection(e) {
+            if (!wordSearchSelecting) return;
+            
+            const row = parseInt(e.target.dataset.row);
+            const col = parseInt(e.target.dataset.col);
+            
+            // Перевірити, чи клітинка вже в виборі
+            const alreadySelected = wordSearchSelection.some(cell => cell.row === row && cell.col === col);
+            if (alreadySelected) return;
+            
+            // Якщо це друга клітинка, просто додати
+            if (wordSearchSelection.length === 1) {
+                wordSearchSelection.push({row, col, letter: wordSearchGrid[row][col]});
+                const tempColor = '#D1D5DB';
+                highlightCells(wordSearchSelection, tempColor, true);
+            } else if (wordSearchSelection.length >= 2) {
+                // Перевірити, чи нова клітинка в лінії з попередніми
+                const start = wordSearchSelection[0];
+                const newCell = {row, col, letter: wordSearchGrid[row][col]};
+                
+                if (isInLine(start, wordSearchSelection[wordSearchSelection.length - 1], newCell)) {
+                    wordSearchSelection.push(newCell);
+                    const tempColor = '#D1D5DB';
+                    highlightCells(wordSearchSelection, tempColor, true);
+                }
+            }
+        }
+        
+        function endSelection(e) {
+            if (!wordSearchSelecting) return;
+            wordSearchSelecting = false;
+            
+            // Отримати слово з виділених клітинок
+            const selectedWord = wordSearchSelection.map(cell => cell.letter).join('');
+            
+            // Перевірити, чи це правильне слово
+            if (wordSearchWords.includes(selectedWord) && !wordSearchFoundWords.includes(selectedWord)) {
+                // Правильне слово знайдено!
+                wordSearchFoundWords.push(selectedWord);
+                const color = wordSearchWordColors[selectedWord];
+                
+                // Постійно підсвітити клітинки
+                highlightCells(wordSearchSelection, color, false);
+                
+                // Оновити список слів
+                drawWordList();
+                
+                // Перевірити, чи всі слова знайдено
+                if (wordSearchFoundWords.length === wordSearchWords.length) {
+                    document.getElementById('wordSearchSuccess').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('captchaWordSearchModal').style.display = 'none';
+                        openFinalModal();
+                    }, 1500);
+                }
+            } else {
+                // Неправильне слово - очистити тимчасове виділення
+                clearTemporaryHighlight();
+            }
+            
+            wordSearchSelection = [];
+        }
+        
+        function isInLine(start, middle, end) {
+            // Перевірка горизонтальної лінії
+            if (start.row === middle.row && middle.row === end.row) {
+                return true;
+            }
+            // Перевірка вертикальної лінії
+            if (start.col === middle.col && middle.col === end.col) {
+                return true;
+            }
+            return false;
+        }
+        
+        function highlightCells(cells, color, isTemporary) {
+            cells.forEach(cell => {
+                const cellElement = document.querySelector(
+                    `.word-search-cell[data-row="${cell.row}"][data-col="${cell.col}"]`
+                );
+                if (cellElement) {
+                    cellElement.style.backgroundColor = color;
+                    if (!isTemporary) {
+                        cellElement.classList.add('found');
+                    } else {
+                        cellElement.dataset.temporary = 'true';
+                    }
+                }
+            });
+        }
+
+        function clearTemporaryHighlight() {
+            document.querySelectorAll('.word-search-cell[data-temporary="true"]').forEach(cell => {
+                if (!cell.classList.contains('found')) {
+                    cell.style.backgroundColor = '#f5f5f5';
+                }
+                delete cell.dataset.temporary;
+            });
+        }
+        
+        function setupCanvas() {
+            wordSearchCanvas = document.getElementById('wordSearchCanvas');
+            wordSearchCtx = wordSearchCanvas.getContext('2d');
+            
+            const container = document.querySelector('.word-search-container');
+            wordSearchCanvas.width = container.offsetWidth;
+            wordSearchCanvas.height = container.offsetHeight;
+        }
+        
+        function drawWordList() {
+            const list = document.getElementById('wordList');
+            list.innerHTML = '';
+            
+            for (let word of wordSearchWords) {
+                const item = document.createElement('div');
+                item.className = 'word-item';
+                item.textContent = word;
+                item.dataset.word = word;
+                
+                if (wordSearchFoundWords.includes(word)) {
+                    item.classList.add('found');
+                }
+                
+                list.appendChild(item);
+            }
+        }
+        
+
         // --- Фінальна капча ---
-        // Кнопка "I am human" може тікати за межі вікна CAPTCHA
         let evadeActive = false, evadeTimeout = null, evadeAnimFrame = null;
         let btnHuman, startLeft, startTop;
 
@@ -805,12 +1248,10 @@
             btnHuman.style.transform = "";
             evadeActive = true;
 
-            // Слідкуємо за мишкою
             document.addEventListener('mousemove', trackMouseGlobal);
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
             evadeAnimFrame = requestAnimationFrame(evadeMoveGlobal);
 
-            // Через 3 секунди кнопка перестає увертатись
             if(evadeTimeout) clearTimeout(evadeTimeout);
             evadeTimeout = setTimeout(() => {
                 evadeActive = false;
@@ -828,29 +1269,23 @@
 
         function evadeMoveGlobal() {
             if (!evadeActive) return;
-            // Поточна позиція кнопки
             let curLeft = parseFloat(btnHuman.style.left);
             let curTop = parseFloat(btnHuman.style.top);
 
-            // Центр кнопки
             let btnCenterX = curLeft + btnHuman.offsetWidth / 2;
             let btnCenterY = curTop + btnHuman.offsetHeight / 2;
 
-            // Відстань до миші
             let dx = btnCenterX - mousePosGlobal.x;
             let dy = btnCenterY - mousePosGlobal.y;
             let dist = Math.sqrt(dx*dx + dy*dy);
 
-            // Якщо миша близько — рухаємо кнопку
             const minDist = 250;
             if (dist < minDist) {
-                // Вектор відштовхування
                 let angle = Math.atan2(dy, dx);
                 let push = (minDist - dist) * 0.18;
                 let newLeft = curLeft + Math.cos(angle) * push;
                 let newTop = curTop + Math.sin(angle) * push;
 
-                // Межі всього екрану (window)
                 const maxLeft = window.innerWidth - btnHuman.offsetWidth - 4;
                 const maxTop = window.innerHeight - btnHuman.offsetHeight - 4;
                 newLeft = Math.max(2, Math.min(maxLeft, newLeft));
@@ -863,7 +1298,7 @@
         }
 
         document.getElementById('btnHuman').addEventListener('click', function() {
-            if(evadeActive) return; // Не даємо натискати поки увертається
+            if(evadeActive) return;
             window.location.href = "https://www.google.com";
         });
 
@@ -878,7 +1313,6 @@
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
         };
 
-        // --- Показати капчу після 2 секунд спінера ---
         window.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 document.getElementById('spinnerBox').style.display = 'none';
@@ -886,7 +1320,6 @@
             }, 2000);
         });
 
-        // Відкриття справжньої капчі по кліку на фейкову
         document.getElementById('captchaFake').addEventListener('click', function() {
             document.getElementById('captchaModal').style.display = 'flex';
             playerPos = findStart();
@@ -919,4 +1352,4 @@
         });
     </script>
 </body>
-  </html>
+</html>
