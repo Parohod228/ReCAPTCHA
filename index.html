@@ -1256,9 +1256,8 @@
             evadeTimeout = setTimeout(() => {
                 evadeActive = false;
                 document.removeEventListener('mousemove', trackMouseGlobal);
-                btnHuman.style.left = startLeft + "px";
-                btnHuman.style.top = startTop + 100 + "px";
             }, 10000);
+            // </CHANGE>
         }
 
         let mousePosGlobal = {x: window.innerWidth/2, y: window.innerHeight/2};
