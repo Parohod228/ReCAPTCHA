@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Перевірка завантаження</title>
+    <!-- Замінено шрифт Georama на Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <style>
       #failCounter1, #failCounter2, #failCounter3, #failCounter4{display: none;}
+        /* Застосовано Roboto як основний шрифт */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
             background: #fff;
             overflow: hidden;
+            font-family: 'Roboto', sans-serif;
         }
+        /* </CHANGE> */
         body {
             display: flex;
             align-items: center;
@@ -45,6 +52,9 @@
             font-weight: bold;
             margin-bottom: 30px;
             letter-spacing: -2px;
+            /* Застосовано Roboto як основний шрифт */
+            font-family: 'Roboto', sans-serif;
+            /* </CHANGE> */
         }
         
         .google-logo span:nth-child(1) { color: #4285f4; }
@@ -92,7 +102,9 @@
             border: 1px solid #f8f9fa;
             border-radius: 4px;
             color: #3c4043;
-            font-family: Arial, sans-serif;
+            /* Змінено шрифт на Roboto */
+            font-family: 'Roboto', sans-serif;
+            /* </CHANGE> */
             font-size: 14px;
             padding: 10px 16px;
             cursor: pointer;
@@ -212,7 +224,9 @@
         .captcha-fake-label {
             font-size: 16px;
             color: #222;
-            font-family: Arial, sans-serif;
+            /* Змінено шрифт на Roboto */
+            font-family: 'Roboto', sans-serif;
+            /* </CHANGE> */
             margin-right: 18px;
         }
         .captcha-fake-logo {
@@ -250,7 +264,9 @@
             box-shadow: 0 2px 16px rgba(0,0,0,0.2);
             width: 370px;
             padding: 0;
-            font-family: Arial, sans-serif;
+            /* Змінено шрифт на Roboto */
+            font-family: 'Roboto', sans-serif;
+            /* </CHANGE> */
             overflow: hidden;
             position: relative;
         }
@@ -341,7 +357,9 @@
             border: 1px solid #d3d3d3;
             border-radius: 4px;
             font-size: 15px;
-            font-family: Arial, sans-serif;
+            /* Змінено шрифт на Roboto */
+            font-family: 'Roboto', sans-serif;
+            /* </CHANGE> */
             font-weight: 500;
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(60,64,67,0.08);
@@ -359,7 +377,9 @@
             border: 1px solid #d3d3d3;
             border-radius: 4px;
             font-size: 15px;
-            font-family: Arial, sans-serif;
+            /* Змінено шрифт на Roboto */
+            font-family: 'Roboto', sans-serif;
+            /* </CHANGE> */
             font-weight: 500;
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(60,64,67,0.08);
@@ -479,7 +499,7 @@
     </div>
     <!-- </CHANGE> -->
     
-    <div id="mainContainer">
+    <div id="mainContainer" style="display: none;">
         <div id="spinnerBox">
             <div class="spinner"></div>
         </div>
@@ -620,6 +640,9 @@
     </div>
 
     <script>
+        let captchaStarted = false;
+        // </CHANGE>
+        
         function blurBackground() {
             document.getElementById('googleBackground').classList.add('blurred');
         }
@@ -1465,12 +1488,30 @@
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
         };
 
+        // Тепер капча запускається тільки після кліку
         window.addEventListener('DOMContentLoaded', function() {
-            blurBackground(); // Блюрити фон коли з'являється спінер
+            // Нічого не робимо при завантаженні - чекаємо на клік користувача
+        });
+        
+        // Додано глобальний слухач кліків для запуску капчі
+        document.addEventListener('click', function startCaptchaOnClick(e) {
+            if (captchaStarted) return; // Якщо капча вже запущена, нічого не робимо
+            
+            captchaStarted = true;
+            
+            // Показати спінер та блюрити фон
+            document.getElementById('mainContainer').style.display = 'flex';
+            document.getElementById('spinnerBox').style.display = 'flex';
+            blurBackground();
+            
+            // Через 2 секунди показати капчу
             setTimeout(() => {
                 document.getElementById('spinnerBox').style.display = 'none';
                 document.getElementById('captchaFake').style.display = 'flex';
             }, 2000);
+            
+            // Видалити цей слухач після першого запуску
+            document.removeEventListener('click', startCaptchaOnClick);
         });
         // </CHANGE>
 
