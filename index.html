@@ -2,33 +2,134 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Перевірка завантаження</title>
-    <!-- Замінено шрифт Georama на Roboto -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google</title>
     <style>
       #failCounter1, #failCounter2, #failCounter3, #failCounter4{display: none;}
-        /* Застосовано Roboto як основний шрифт */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
             background: #fff;
             overflow: hidden;
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
         }
-        /* </CHANGE> */
-        body {
+        
+        .google-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            z-index: 1;
+            transition: filter 1s ease;
+        }
+        
+        .google-header.blurred {
+            filter: blur(10px);
+        }
+        
+        .google-header a {
+            color: #222;
+            text-decoration: none;
+            font-size: 13px;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+        }
+        
+        .google-header a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+        
+        .google-apps-icon {
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            position: relative;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 0.2s;
         }
         
-        /* Додано стилі для Google інтерфейсу як фон */
-        #googleBackground {
+        .google-apps-icon:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .google-apps-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #5f6368;
+        }
+        
+        .google-user-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #4285f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        
+        .google-user-icon:hover {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .google-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f2f2f2;
+            z-index: 1;
+            transition: filter 1s ease;
+        }
+        
+        .google-footer.blurred {
+            filter: blur(10px);
+        }
+        
+        .footer-country {
+            padding: 15px 30px;
+            border-bottom: 1px solid #dadce0;
+            color: #70757a;
+            font-size: 15px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-left, .footer-right {
+            display: flex;
+            gap: 27px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: #70757a;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .google-background {
             position: fixed;
             top: 0;
             left: 0;
@@ -38,23 +139,19 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #fff;
-            z-index: 1;
-            transition: filter 0.3s ease;
+            z-index: 0;
+            transition: filter 1s ease;
         }
         
-        #googleBackground.blurred {
-            filter: blur(8px);
+        .google-background.blurred {
+            filter: blur(10px);
         }
         
         .google-logo {
             font-size: 90px;
-            font-weight: bold;
+            font-weight: 400;
             margin-bottom: 30px;
             letter-spacing: -2px;
-            /* Застосовано Roboto як основний шрифт */
-            font-family: 'Roboto', sans-serif;
-            /* </CHANGE> */
         }
         
         .google-logo span:nth-child(1) { color: #4285f4; }
@@ -67,34 +164,69 @@
         .google-search-box {
             width: 584px;
             max-width: 90%;
-            margin-bottom: 30px;
-        }
-        
-        .google-search-input {
-            width: 100%;
             height: 44px;
             border: 1px solid #dfe1e5;
             border-radius: 24px;
-            padding: 0 20px;
-            font-size: 16px;
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-            transition: box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            margin-bottom: 30px;
         }
         
-        .google-search-input:hover {
-            box-shadow: 0 1px 6px rgba(32,33,36,0.4);
+        .google-search-box:hover {
+            box-shadow: 0 1px 6px rgba(32,33,36,.4);
         }
         
-        .google-search-input:focus {
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            opacity: 0.6;
+        }
+        
+        .google-search-input {
+            flex: 1;
+            border: none;
             outline: none;
-            box-shadow: 0 1px 6px rgba(32,33,36,0.4);
+            font-size: 16px;
+            color: #202124;
+        }
+        
+        .search-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 8px;
+        }
+        
+        .search-action-btn {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        
+        .search-action-btn:hover {
+            opacity: 1;
+        }
+        
+        .search-action-btn svg {
+            width: 20px;
+            height: 20px;
         }
         
         .google-buttons {
             display: flex;
             gap: 12px;
-            justify-content: center;
-            margin-bottom: 30px;
+            margin-top: 8px;
         }
         
         .google-btn {
@@ -102,9 +234,6 @@
             border: 1px solid #f8f9fa;
             border-radius: 4px;
             color: #3c4043;
-            /* Змінено шрифт на Roboto */
-            font-family: 'Roboto', sans-serif;
-            /* </CHANGE> */
             font-size: 14px;
             padding: 10px 16px;
             cursor: pointer;
@@ -112,51 +241,16 @@
         }
         
         .google-btn:hover {
-            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-            background: #f8f9fa;
+            box-shadow: 0 1px 1px rgba(0,0,0,.1);
             border: 1px solid #dadce0;
-            color: #202124;
         }
         
-        .google-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #f2f2f2;
-            border-top: 1px solid #e4e4e4;
-        }
-        
-        .google-footer-country {
-            padding: 15px 30px;
-            border-bottom: 1px solid #dadce0;
-            font-size: 15px;
-            color: #70757a;
-        }
-        
-        .google-footer-links {
+        body {
             display: flex;
-            justify-content: space-between;
-            padding: 15px 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
-        
-        .google-footer-left, .google-footer-right {
-            display: flex;
-            gap: 27px;
-        }
-        
-        .google-footer-link {
-            color: #70757a;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .google-footer-link:hover {
-            text-decoration: underline;
-        }
-        /* </CHANGE> */
-        
         .spinner {
             width: 80px;
             height: 80px;
@@ -171,18 +265,15 @@
             100% { transform: rotate(360deg);}
         }
         
-        /* Оновлено z-index для mainContainer щоб бути поверх фону */
-        #mainContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            z-index: 10;
+        .warning-text {
+            display: none;
+            font-size: 16px;
+            color: #ea4335;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-align: center;
+            z-index: 8;
         }
-        /* </CHANGE> */
         
         .captcha-fake {
             display: flex;
@@ -199,6 +290,7 @@
             cursor: pointer;
             user-select: none;
             transition: box-shadow 0.2s;
+            z-index: 10;
         }
         .captcha-fake:active {
             box-shadow: 0 2px 16px rgba(66,133,244,0.15);
@@ -224,9 +316,7 @@
         .captcha-fake-label {
             font-size: 16px;
             color: #222;
-            /* Змінено шрифт на Roboto */
-            font-family: 'Roboto', sans-serif;
-            /* </CHANGE> */
+            font-family: Arial, sans-serif;
             margin-right: 18px;
         }
         .captcha-fake-logo {
@@ -253,7 +343,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.35);
+            background: transparent;
             align-items: center;
             justify-content: center;
             z-index: 100;
@@ -264,9 +354,7 @@
             box-shadow: 0 2px 16px rgba(0,0,0,0.2);
             width: 370px;
             padding: 0;
-            /* Змінено шрифт на Roboto */
-            font-family: 'Roboto', sans-serif;
-            /* </CHANGE> */
+            font-family: Arial, sans-serif;
             overflow: hidden;
             position: relative;
         }
@@ -357,9 +445,7 @@
             border: 1px solid #d3d3d3;
             border-radius: 4px;
             font-size: 15px;
-            /* Змінено шрифт на Roboto */
-            font-family: 'Roboto', sans-serif;
-            /* </CHANGE> */
+            font-family: Arial, sans-serif;
             font-weight: 500;
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(60,64,67,0.08);
@@ -377,9 +463,7 @@
             border: 1px solid #d3d3d3;
             border-radius: 4px;
             font-size: 15px;
-            /* Змінено шрифт на Roboto */
-            font-family: 'Roboto', sans-serif;
-            /* </CHANGE> */
+            font-family: Arial, sans-serif;
             font-weight: 500;
             cursor: pointer;
             box-shadow: 0 1px 2px rgba(60,64,67,0.08);
@@ -465,42 +549,98 @@
             color: #fff;
             text-decoration: line-through;
         }
+        
+        #mainContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        #mainContainer > * {
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
-    <!-- Додано Google інтерфейс як фон -->
-    <div id="googleBackground">
+    <div class="google-header">
+        <a href="#">Gmail</a>
+        <a href="#">Зображення</a>
+        <div class="google-apps-icon" title="Додатки Google">
+            <svg viewBox="0 0 24 24">
+                <path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z"></path>
+            </svg>
+        </div>
+        <div class="google-user-icon" title="Обліковий запис Google">
+            У
+        </div>
+    </div>
+    
+    <div class="google-background">
         <div class="google-logo">
             <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
         </div>
         <div class="google-search-box">
-            <input type="text" class="google-search-input" placeholder="">
+            <svg class="search-icon" focusable="false" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#9aa0a6" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+            </svg>
+            <input type="text" class="google-search-input" />
+            
+            <div class="search-actions">
+                <button class="search-action-btn" aria-label="Голосовий пошук">
+                    <svg focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#4285f4" d="m12 15c1.66 0 3-1.31 3-2.97v-7.02c0-1.66-1.34-3.01-3-3.01s-3 1.34-3 3.01v7.02c0 1.66 1.34 2.97 3 2.97z"></path>
+                        <path fill="#34a853" d="m11 18.08h2v3.92h-2z"></path>
+                        <path fill="#fbbc05" d="m7.05 16.87c-1.27-1.33-2.05-2.83-2.05-4.87h2c0 1.45 0.56 2.42 1.47 3.38v0.32l-1.15 1.18z"></path>
+                        <path fill="#ea4335" d="m12 16.93a4.97 5.25 0 0 1 -3.54 -1.55l-1.41 1.49c1.26 1.34 3.02 2.13 4.95 2.13 3.87 0 6.99-2.92 6.99-7h-1.99c0 2.92-2.24 4.93-5 4.93z"></path>
+                    </svg>
+                </button>
+                <button class="search-action-btn" aria-label="Пошук за зображенням">
+                    <svg focusable="false" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+                        <rect fill="none" height="192" width="192"></rect>
+                        <g>
+                            <circle fill="#34a853" cx="144.07" cy="144" r="16"></circle>
+                            <circle fill="#4285f4" cx="96.07" cy="104" r="24"></circle>
+                            <path fill="#ea4335" d="M24,135.2c0,18.11,14.69,32.8,32.8,32.8H96v-16l-40.1-0.1c-8.8,0-15.9-8.19-15.9-17.9v-18H24V135.2z"></path>
+                            <path fill="#fbbc05" d="M168,72.8c0-18.11-14.69-32.8-32.8-32.8H116l20,16c8.8,0,16,8.29,16,18v30h16V72.8z"></path>
+                            <path fill="#4285f4" d="M112,24l-32,0L68,40H56.8C38.69,40,24,54.69,24,72.8V92h16V74c0-9.71,7.2-18,16-18h80L112,24z"></path>
+                        </g>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div class="google-buttons">
             <button class="google-btn">Пошук Google</button>
             <button class="google-btn">Мені пощастить</button>
         </div>
-        <div class="google-footer">
-            <div class="google-footer-country">Україна</div>
-            <div class="google-footer-links">
-                <div class="google-footer-left">
-                    <a href="#" class="google-footer-link">Про Google</a>
-                    <a href="#" class="google-footer-link">Реклама</a>
-                    <a href="#" class="google-footer-link">Для бізнесу</a>
-                    <a href="#" class="google-footer-link">Як працює Пошук</a>
-                </div>
-                <div class="google-footer-right">
-                    <a href="#" class="google-footer-link">Конфіденційність</a>
-                    <a href="#" class="google-footer-link">Умови</a>
-                    <a href="#" class="google-footer-link">Налаштування</a>
-                </div>
+    </div>
+    
+    <div class="google-footer">
+        <div class="footer-country">Україна</div>
+        <div class="footer-links">
+            <div class="footer-left">
+                <a href="#">Про Google</a>
+                <a href="#">Реклама</a>
+                <a href="#">Для бізнесу</a>
+                <a href="#">Як працює Пошук</a>
+            </div>
+            <div class="footer-right">
+                <a href="#">Конфіденційність</a>
+                <a href="#">Умови</a>
+                <a href="#">Налаштування</a>
             </div>
         </div>
     </div>
-    <!-- </CHANGE> -->
     
-    <div id="mainContainer" style="display: none;">
-        <div id="spinnerBox">
+    <div id="mainContainer">
+        <div id="spinnerBox" style="display:none;">
             <div class="spinner"></div>
         </div>
         <div id="captchaFake" class="captcha-fake" tabindex="0" style="display:none;">
@@ -510,13 +650,11 @@
         </div>
     </div>
     
-    <!-- Модальне вікно лабіринту перекладено українською -->
     <div class="captcha-modal" id="captchaModal">
         <div class="captcha-window">
             <button class="captcha-close" id="closeCaptcha" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
                 <div class="captcha-title">ReCaptcha</div>
                 <div id="failCounter1" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Помилок: 0</div>
             </div>
@@ -534,13 +672,11 @@
         </div>
     </div>
     
-    <!-- Модальне вікно Simon перекладено українською -->
     <div class="captcha-modal" id="captchaSimonModal" style="display:none;">
         <div class="captcha-window">
             <button class="captcha-close" id="closeSimon" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
                 <div class="captcha-title">ReCaptcha</div>
                 <div id="failCounter2" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Помилок: 0</div>
             </div>
@@ -559,13 +695,11 @@
         </div>
     </div>
     
-    <!-- Модальне вікно хрестиків-ноликів перекладено українською -->
     <div class="captcha-modal" id="captchaTicTacToeModal" style="display:none;">
         <div class="captcha-window">
             <button class="captcha-close" id="closeTicTacToe" aria-label="Закрити">&times;</button>
             <div class="captcha-header" style="position:relative;">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
                 <div class="captcha-title">ReCaptcha</div>
                 <div id="failCounter3"
                     style="display:none;position:absolute;top:44px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;z-index:2;">
@@ -587,18 +721,15 @@
         </div>
     </div>
     
-    <!-- Додано нове модальне вікно для гри "Пошук слів" -->
     <div class="captcha-modal" id="captchaWordSearchModal" style="display:none;">
         <div class="captcha-window" style="width: 420px;">
             <button class="captcha-close" id="closeWordSearch" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
                 <div class="captcha-title">ReCaptcha</div>
                 <div id="failCounter4" style="position:absolute;top:10px;right:16px;font-size:13px;color:#ea4335;font-weight:bold;">Помилок: 0</div>
             </div>
             <div class="captcha-content">
-                <!-- Оновлено текст інструкції - видалено згадку про діагональні слова -->
                 <div style="font-size:13px;color:#555;margin-bottom:10px;">
                     Знайдіть всі 5 слів у сітці. Слова можуть бути горизонтальними або вертикальними.
                 </div>
@@ -606,7 +737,6 @@
                     <canvas id="wordSearchCanvas" class="word-search-overlay"></canvas>
                     <div id="wordSearchGrid" class="word-search-grid"></div>
                 </div>
-                 <!-- Повернути список слів замість лічильника -->
                 <div id="wordList" class="word-list"></div>
                 <div id="wordSearchSuccess" class="captcha-success" style="display:none;">Вітаємо! Ви знайшли всі слова!</div>
                 <div id="wordSearchFail" class="captcha-fail" style="display:none;">Спробуйте ще раз!</div>
@@ -617,13 +747,11 @@
         </div>
     </div>
     
-    <!-- Фінальне модальне вікно перекладено українською -->
     <div class="captcha-modal" id="captchaFinalModal" style="display:none;">
         <div class="captcha-window">
             <button class="captcha-close" id="closeFinal" aria-label="Закрити">&times;</button>
             <div class="captcha-header">
                 <img class="captcha-logo" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA">
-                <!-- Завжди показувати "ReCaptcha" замість назви гри -->
                 <div class="captcha-title">ReCaptcha</div>
             </div>
             <div class="captcha-content">
@@ -640,34 +768,17 @@
     </div>
 
     <script>
-        let captchaStarted = false;
-        // </CHANGE>
-        
-        function blurBackground() {
-            document.getElementById('googleBackground').classList.add('blurred');
-        }
-        
-        function unblurBackground() {
-            document.getElementById('googleBackground').classList.remove('blurred');
-        }
-        // </CHANGE>
-        
-        // Управління WASD (UA/EN) та ФЦІВ (UA)
         const moveKeys = {
-            // English
             'w': {dx:0, dy:-1},
             'a': {dx:-1, dy:0},
             's': {dx:0, dy:1},
             'd': {dx:1, dy:0},
-            // Українська ФЦІВ
             'ф': {dx:-1, dy:0},
             'ц': {dx:0, dy:-1},
             'і': {dx:0, dy:1},
             'в': {dx:1, dy:0},
         };
         
-        
-        // Генерація лабіринту
         function generateMaze(width, height) {
             let maze = Array.from({length: height}, () => Array(width).fill(0));
             function carve(x, y) {
@@ -708,28 +819,40 @@
             let viewSize = 15;
             let half = Math.floor(viewSize/2);
             
-            // Обчислити бажану позицію камери (центр на гравці)
             let startX = playerPos.x - half;
             let startY = playerPos.y - half;
+            let endX = playerPos.x + half;
+            let endY = playerPos.y + half;
             
-            // Зупинити камеру коли гравець за 2 блоки від краю
-            // Ліва межа: якщо гравець на позиції 2 або менше, камера не рухається лівіше
+            if (startX < 0) {
+                startX = 0;
+                endX = viewSize - 1;
+            }
+            if (startY < 0) {
+                startY = 0;
+                endY = viewSize - 1;
+            }
+            if (endX > MAZE_SIZE - 1) {
+                endX = MAZE_SIZE - 1;
+                startX = MAZE_SIZE - viewSize;
+            }
+            if (endY > MAZE_SIZE - 1) {
+                endY = MAZE_SIZE - 1;
+                startY = MAZE_SIZE - viewSize;
+            }
+            
             if (playerPos.x <= 2) {
                 startX = 0;
             }
-            // Права межа: якщо гравець на позиції 18 або більше, камера не рухається правіше
             if (playerPos.x >= MAZE_SIZE - 3) {
                 startX = MAZE_SIZE - viewSize;
             }
-            // Верхня межа: якщо гравець на позиції 2 або менше, камера не рухається вище
             if (playerPos.y <= 2) {
                 startY = 0;
             }
-            // Нижня межа: якщо гравець на позиції 18 або більше, камера не рухається нижче
             if (playerPos.y >= MAZE_SIZE - 3) {
                 startY = MAZE_SIZE - viewSize;
             }
-            // </CHANGE>
             
             maze.style.gridTemplateColumns = `repeat(${viewSize}, 16px)`;
             maze.style.gridTemplateRows = `repeat(${viewSize}, 16px)`;
@@ -797,12 +920,42 @@
             document.getElementById('failCounter4').textContent = `Помилок: ${failCount4}`;
         }
 
+        function returnToMaze() {
+            // Close all modals
+            document.getElementById('captchaModal').style.display = 'none';
+            document.getElementById('captchaSimonModal').style.display = 'none';
+            document.getElementById('captchaTicTacToeModal').style.display = 'none';
+            document.getElementById('captchaWordSearchModal').style.display = 'none';
+            document.getElementById('captchaFinalModal').style.display = 'none';
+            
+            // Reset game states
+            simonActive = false;
+            tttGameActive = false;
+            evadeActive = false;
+            if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
+            if(evadeTimeout) clearTimeout(evadeTimeout);
+            document.removeEventListener('mousemove', trackMouseGlobal);
+            
+            // Reset maze
+            mazeData = generateMaze(MAZE_SIZE, MAZE_SIZE);
+            playerPos = findStart();
+            document.getElementById('captchaSuccess').style.display = 'none';
+            document.getElementById('captchaFail').style.display = 'none';
+            
+            // Open maze modal
+            setTimeout(() => {
+                document.getElementById('captchaModal').style.display = 'flex';
+                drawMaze();
+                isModalActive = true;
+            }, 500);
+        }
+
         function failCaptcha() {
             failCount1++;
             updateFailCounters();
             document.getElementById('captchaFail').style.display = 'block';
             setTimeout(() => {
-                location.reload();
+                returnToMaze();
             }, 1200);
         }
 
@@ -811,11 +964,10 @@
             updateFailCounters();
             document.getElementById('simonFail').style.display = 'block';
             setTimeout(() => {
-                location.reload();
+                returnToMaze();
             }, 1200);
         }
 
-        // --- Simon/Memory Game ---
         let simonSequence = [];
         let simonStep = 0;
         let simonActive = false;
@@ -930,7 +1082,6 @@
             simonActive = false;
         };
 
-        // --- Tic-Tac-Toe ---
         let tttBoard, tttHuman, tttAI, tttCurrent, tttAttempts, tttHumanWins, tttStarter, tttGameActive;
 
         function resetTicTacToe(starter = "ai") {
@@ -1068,7 +1219,7 @@
                 document.getElementById('tttFail').textContent = "Більше немає спроб! Спробуйте пізніше.";
                 document.getElementById('tttRestart').style.display = 'none';
                 setTimeout(() => {
-                    location.reload();
+                    returnToMaze();
                 }, 2000);
             }
         }
@@ -1104,15 +1255,14 @@
         
         const ukrainianLetters = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЮЯ';
         const brightColors = [
-            '#FF9A56', // яскравий помаранчевий
-            '#FF6B9D', // коралово-рожевий
-            '#4ECDC4', // бірюзовий
-            '#A78BFA', // фіолетовий
-            '#FCD34D'  // золотистий
+            '#FF9A56',
+            '#FF6B9D',
+            '#4ECDC4',
+            '#A78BFA',
+            '#FCD34D'
         ];
         
         const commonWords = [
-            // 4 букви
             'ЗОРЯ', 'ВОДА', 'НЕБО', 'ПОЛЕ', 'ГОРА',
             'ДРУГ', 'УРОК', 'МЕТА', 'ВІРА', 'ДОЛЯ',
             'ДЕНЬ', 'ПТАХ', 'ЗВІР', 'РИБА', 'ЗВУК',
@@ -1122,7 +1272,6 @@
             'МАТИ', 'ДІТИ', 'РУКА', 'НОГА', 'ТІЛО',
             'ХЛІБ', 'СІЛЬ', 'ВИНО', 'ПИВО', 'КАВА',
             'СТІЛ', 'СТУЛ', 'ДВІР', 'ПАРК', 'СКВЕР',
-            // 5 букв
             'ЛЮБОВ', 'МРІЯ', 'СЛОВО', 'ЗЕМЛЯ', 'ВІТЕР',
             'КНИГА', 'ТАНЕЦЬ', 'ПІСНЯ', 'СОНЦЕ', 'МІСЯЦЬ',
             'ХМАРА', 'ВЕСНА', 'ОСІНЬ', 'КВІТКА', 'ДЕРЕВО',
@@ -1134,7 +1283,6 @@
             'РАНОК', 'ВЕЧІР', 'ЗІРКА', 'ІСКРА', 'СКЕЛЯ',
             'ПІСОК', 'ТРАВА', 'ЛИСТЯ', 'ГІЛКА', 'КАМІНЬ',
             'ВОГОНЬ', 'ГРІМ', 'ДОРОГА', 'ВУЛИЦЯ', 'БУДИНОК',
-            // 6 букв
             'ПОШУК', 'МУЗИКА', 'РАДІСТЬ', 'ДИТИНА', 'БАТЬКО',
             'РОБОТА', 'СПРАВА', 'УСПІХ', 'ЗНАННЯ', 'КРАЇНА', 'СВОБОДА',
             'КОСМОС', 'ПЛАНЕТА', 'КОРІНЬ', 'ПТАШКА', 'ТВАРИНА',
@@ -1144,18 +1292,14 @@
         ].filter(word => word.length >= 4 && word.length <= 6);
         
         const biologicalTerms = [
-            // 4 букви
             'ГЕНОМ', 'МІТОЗ',
-            // 5 букв
             'БІЛОК', 'НЕЙРОН', 'ВІРУС',
-            // 6 букв
             'КЛІТИНА', 'СИНАПС', 'МУТАЦІЯ'
         ].filter(word => word.length >= 4 && word.length <= 6);
         
         function getRandomLetter() {
             return ukrainianLetters[Math.floor(Math.random() * ukrainianLetters.length)];
         }
-        
         
         function openWordSearchGame() {
             document.getElementById('captchaWordSearchModal').style.display = 'flex';
@@ -1168,7 +1312,7 @@
             const shuffledBio = [...biologicalTerms].sort(() => Math.random() - 0.5);
             const shuffledCommon = [...commonWords].sort(() => Math.random() - 0.5);
             
-            const numBioWords = Math.min(2, Math.floor(Math.random() * 3)); // 0, 1, або 2
+            const numBioWords = Math.min(2, Math.floor(Math.random() * 3));
             const numCommonWords = 5 - numBioWords;
             
             wordSearchWords = [
@@ -1183,7 +1327,6 @@
                 wordSearchWordColors[word] = brightColors[index % brightColors.length];
             });
             
-            // Розмістити слова
             for (let word of wordSearchWords) {
                 placeWord(word);
             }
@@ -1203,8 +1346,8 @@
         
         function placeWord(word) {
             const directions = [
-                {dx: 1, dy: 0},   // горизонтально вправо
-                {dx: 0, dy: 1},   // вертикально вниз
+                {dx: 1, dy: 0},
+                {dx: 0, dy: 1},
             ];
             
             let placed = false;
@@ -1271,8 +1414,7 @@
             const col = parseInt(e.target.dataset.col);
             wordSearchSelection.push({row, col, letter: wordSearchGrid[row][col]});
             
-            // Тимчасово підсвітити першу клітинку
-            const tempColor = '#D1D5DB'; // сірий для тимчасового виділення
+            const tempColor = '#D1D5DB';
             highlightCells(wordSearchSelection, tempColor, true);
         }
         
@@ -1282,17 +1424,14 @@
             const row = parseInt(e.target.dataset.row);
             const col = parseInt(e.target.dataset.col);
             
-            // Перевірити, чи клітинка вже в виборі
             const alreadySelected = wordSearchSelection.some(cell => cell.row === row && cell.col === col);
             if (alreadySelected) return;
             
-            // Якщо це друга клітинка, просто додати
             if (wordSearchSelection.length === 1) {
                 wordSearchSelection.push({row, col, letter: wordSearchGrid[row][col]});
                 const tempColor = '#D1D5DB';
                 highlightCells(wordSearchSelection, tempColor, true);
             } else if (wordSearchSelection.length >= 2) {
-                // Перевірити, чи нова клітинка в лінії з попередніми
                 const start = wordSearchSelection[0];
                 const newCell = {row, col, letter: wordSearchGrid[row][col]};
                 
@@ -1308,22 +1447,16 @@
             if (!wordSearchSelecting) return;
             wordSearchSelecting = false;
             
-            // Отримати слово з виділених клітинок
             const selectedWord = wordSearchSelection.map(cell => cell.letter).join('');
             
-            // Перевірити, чи це правильне слово
             if (wordSearchWords.includes(selectedWord) && !wordSearchFoundWords.includes(selectedWord)) {
-                // Правильне слово знайдено!
                 wordSearchFoundWords.push(selectedWord);
                 const color = wordSearchWordColors[selectedWord];
                 
-                // Постійно підсвітити клітинки
                 highlightCells(wordSearchSelection, color, false);
                 
-                // Оновити список слів
                 drawWordList();
                 
-                // Перевірити, чи всі слова знайдено
                 if (wordSearchFoundWords.length === wordSearchWords.length) {
                     document.getElementById('wordSearchSuccess').style.display = 'block';
                     setTimeout(() => {
@@ -1332,7 +1465,6 @@
                     }, 1500);
                 }
             } else {
-                // Неправильне слово - очистити тимчасове виділення
                 clearTemporaryHighlight();
             }
             
@@ -1340,11 +1472,9 @@
         }
         
         function isInLine(start, middle, end) {
-            // Перевірка горизонтальної лінії
             if (start.row === middle.row && middle.row === end.row) {
                 return true;
             }
-            // Перевірка вертикальної лінії
             if (start.col === middle.col && middle.col === end.col) {
                 return true;
             }
@@ -1402,11 +1532,10 @@
                 list.appendChild(item);
             }
         }
-        
 
-        // --- Фінальна капча ---
         let evadeActive = false, evadeTimeout = null, evadeAnimFrame = null;
         let btnHuman, startLeft, startTop;
+        let evadeHasBeenActivated = false;
 
         function openFinalModal() {
             document.getElementById('captchaFinalModal').style.display = 'flex';
@@ -1420,8 +1549,17 @@
             btnHuman.style.left = startLeft + "px";
             btnHuman.style.top = startTop + "px";
             btnHuman.style.transform = "";
-            evadeActive = true;
+            evadeActive = false;
+            evadeHasBeenActivated = false;
+            
+            btnHuman.addEventListener('mouseenter', activateEvade);
+        }
 
+        function activateEvade() {
+            if (evadeActive || evadeHasBeenActivated) return;
+            evadeActive = true;
+            evadeHasBeenActivated = true;
+            
             document.addEventListener('mousemove', trackMouseGlobal);
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
             evadeAnimFrame = requestAnimationFrame(evadeMoveGlobal);
@@ -1430,10 +1568,9 @@
             evadeTimeout = setTimeout(() => {
                 evadeActive = false;
                 document.removeEventListener('mousemove', trackMouseGlobal);
-                // Видалено: btnHuman.style.left = startLeft + "px";
-                // Видалено: btnHuman.style.top = startTop + 100 + "px";
+                if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
+                evadeAnimFrame = null;
             }, 10000);
-            // </CHANGE>
         }
 
         let mousePosGlobal = {x: window.innerWidth/2, y: window.innerHeight/2};
@@ -1443,7 +1580,11 @@
         }
 
         function evadeMoveGlobal() {
-            if (!evadeActive) return;
+            if (!evadeActive) {
+                if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
+                evadeAnimFrame = null;
+                return;
+            }
             let curLeft = parseFloat(btnHuman.style.left);
             let curTop = parseFloat(btnHuman.style.top);
 
@@ -1478,7 +1619,7 @@
         });
 
         document.getElementById('btnRobot').addEventListener('click', function() {
-            location.reload();
+            returnToMaze();
         });
 
         document.getElementById('closeFinal').onclick = function() {
@@ -1488,35 +1629,24 @@
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
         };
 
-        // Тепер капча запускається тільки після кліку
-        window.addEventListener('DOMContentLoaded', function() {
-            // Нічого не робимо при завантаженні - чекаємо на клік користувача
-        });
+        let hasStarted = false;
         
-        // Додано глобальний слухач кліків для запуску капчі
-        document.addEventListener('click', function startCaptchaOnClick(e) {
-            if (captchaStarted) return; // Якщо капча вже запущена, нічого не робимо
-            
-            captchaStarted = true;
-            
-            // Показати спінер та блюрити фон
-            document.getElementById('mainContainer').style.display = 'flex';
-            document.getElementById('spinnerBox').style.display = 'flex';
-            blurBackground();
-            
-            // Через 2 секунди показати капчу
-            setTimeout(() => {
-                document.getElementById('spinnerBox').style.display = 'none';
-                document.getElementById('captchaFake').style.display = 'flex';
-            }, 2000);
-            
-            // Видалити цей слухач після першого запуску
-            document.removeEventListener('click', startCaptchaOnClick);
+        document.addEventListener('click', function(e) {
+            if (!hasStarted) {
+                hasStarted = true;
+                const googleBg = document.querySelector('.google-background');
+                googleBg.classList.add('blurred');
+                document.querySelector('.google-header').classList.add('blurred');
+                document.querySelector('.google-footer').classList.add('blurred');
+                document.getElementById('spinnerBox').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('spinnerBox').style.display = 'none';
+                    document.getElementById('captchaFake').style.display = 'flex';
+                }, 2000);
+            }
         });
-        // </CHANGE>
 
         document.getElementById('captchaFake').addEventListener('click', function() {
-            blurBackground();
             document.getElementById('captchaModal').style.display = 'flex';
             playerPos = findStart();
             document.getElementById('captchaSuccess').style.display = 'none';
@@ -1524,7 +1654,8 @@
             drawMaze();
             isModalActive = true;
         });
-        // </CHANGE>
+
+        let isModalActive = false;
 
         window.addEventListener('keydown', function(e) {
             if (!isModalActive || document.getElementById('captchaModal').style.display !== 'flex') return;
@@ -1545,6 +1676,15 @@
                 e.preventDefault();
             }
         });
+        
+        document.getElementById('closeWordSearch').onclick = function() {
+            document.getElementById('captchaWordSearchModal').style.display = 'none';
+        };
+        
+        document.getElementById('closeCaptcha').onclick = function() {
+            document.getElementById('captchaModal').style.display = 'none';
+            isModalActive = false;
+        };
     </script>
 </body>
 </html>
