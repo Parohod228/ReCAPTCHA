@@ -17,7 +17,134 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            position: relative;
         }
+        
+        /* Додано стилі для Google інтерфейсу як фон */
+        #googleBackground {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            z-index: 1;
+            transition: filter 0.3s ease;
+        }
+        
+        #googleBackground.blurred {
+            filter: blur(8px);
+        }
+        
+        .google-logo {
+            font-size: 90px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+        }
+        
+        .google-logo span:nth-child(1) { color: #4285f4; }
+        .google-logo span:nth-child(2) { color: #ea4335; }
+        .google-logo span:nth-child(3) { color: #fbbc04; }
+        .google-logo span:nth-child(4) { color: #4285f4; }
+        .google-logo span:nth-child(5) { color: #34a853; }
+        .google-logo span:nth-child(6) { color: #ea4335; }
+        
+        .google-search-box {
+            width: 584px;
+            max-width: 90%;
+            margin-bottom: 30px;
+        }
+        
+        .google-search-input {
+            width: 100%;
+            height: 44px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            padding: 0 20px;
+            font-size: 16px;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            transition: box-shadow 0.2s;
+        }
+        
+        .google-search-input:hover {
+            box-shadow: 0 1px 6px rgba(32,33,36,0.4);
+        }
+        
+        .google-search-input:focus {
+            outline: none;
+            box-shadow: 0 1px 6px rgba(32,33,36,0.4);
+        }
+        
+        .google-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .google-btn {
+            background: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        .google-btn:hover {
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            color: #202124;
+        }
+        
+        .google-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f2f2f2;
+            border-top: 1px solid #e4e4e4;
+        }
+        
+        .google-footer-country {
+            padding: 15px 30px;
+            border-bottom: 1px solid #dadce0;
+            font-size: 15px;
+            color: #70757a;
+        }
+        
+        .google-footer-links {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            flex-wrap: wrap;
+        }
+        
+        .google-footer-left, .google-footer-right {
+            display: flex;
+            gap: 27px;
+        }
+        
+        .google-footer-link {
+            color: #70757a;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .google-footer-link:hover {
+            text-decoration: underline;
+        }
+        /* </CHANGE> */
+        
         .spinner {
             width: 80px;
             height: 80px;
@@ -31,6 +158,20 @@
             0% { transform: rotate(0deg);}
             100% { transform: rotate(360deg);}
         }
+        
+        /* Оновлено z-index для mainContainer щоб бути поверх фону */
+        #mainContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+        /* </CHANGE> */
+        
         .captcha-fake {
             display: flex;
             flex-direction: row;
@@ -242,7 +383,6 @@
             transition: background 0s;
         }
         
-        /* Додано стилі для гри "Пошук слів" */
         .word-search-container {
             position: relative;
             display: inline-block;
@@ -250,7 +390,6 @@
         }
         .word-search-grid {
             display: grid;
-            /* Змінено розмір сітки з 12x12 на 10x10 */
             grid-template-columns: repeat(10, 32px);
             grid-template-rows: repeat(10, 32px);
             gap: 2px;
@@ -271,10 +410,8 @@
             cursor: pointer;
             position: relative;
             z-index: 2;
-            /* Додати transition для плавної зміни кольору */
             transition: background-color 0.3s ease;
         }
-        /* Додати клас для знайдених клітинок */
         .word-search-cell.found {
             color: #fff;
             font-weight: bold;
@@ -311,7 +448,38 @@
     </style>
 </head>
 <body>
-    <div id="mainContainer" style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;">
+    <!-- Додано Google інтерфейс як фон -->
+    <div id="googleBackground">
+        <div class="google-logo">
+            <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+        </div>
+        <div class="google-search-box">
+            <input type="text" class="google-search-input" placeholder="">
+        </div>
+        <div class="google-buttons">
+            <button class="google-btn">Пошук Google</button>
+            <button class="google-btn">Мені пощастить</button>
+        </div>
+        <div class="google-footer">
+            <div class="google-footer-country">Україна</div>
+            <div class="google-footer-links">
+                <div class="google-footer-left">
+                    <a href="#" class="google-footer-link">Про Google</a>
+                    <a href="#" class="google-footer-link">Реклама</a>
+                    <a href="#" class="google-footer-link">Для бізнесу</a>
+                    <a href="#" class="google-footer-link">Як працює Пошук</a>
+                </div>
+                <div class="google-footer-right">
+                    <a href="#" class="google-footer-link">Конфіденційність</a>
+                    <a href="#" class="google-footer-link">Умови</a>
+                    <a href="#" class="google-footer-link">Налаштування</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- </CHANGE> -->
+    
+    <div id="mainContainer">
         <div id="spinnerBox">
             <div class="spinner"></div>
         </div>
@@ -452,6 +620,14 @@
     </div>
 
     <script>
+        function blurBackground() {
+            document.getElementById('googleBackground').classList.add('blurred');
+        }
+        
+        function unblurBackground() {
+            document.getElementById('googleBackground').classList.remove('blurred');
+        }
+        // </CHANGE>
         
         // Управління WASD (UA/EN) та ФЦІВ (UA)
         const moveKeys = {
@@ -509,29 +685,9 @@
             let viewSize = 15;
             let half = Math.floor(viewSize/2);
             
-            // Обчислити бажану позицію камери
+            // Обчислити бажану позицію камери (центр на гравці)
             let startX = playerPos.x - half;
             let startY = playerPos.y - half;
-            let endX = playerPos.x + half;
-            let endY = playerPos.y + half;
-            
-            // Обмежити view до меж лабіринту [0, 20]
-            if (startX < 0) {
-                startX = 0;
-                endX = viewSize - 1;
-            }
-            if (startY < 0) {
-                startY = 0;
-                endY = viewSize - 1;
-            }
-            if (endX > MAZE_SIZE - 1) {
-                endX = MAZE_SIZE - 1;
-                startX = MAZE_SIZE - viewSize;
-            }
-            if (endY > MAZE_SIZE - 1) {
-                endY = MAZE_SIZE - 1;
-                startY = MAZE_SIZE - viewSize;
-            }
             
             // Зупинити камеру коли гравець за 2 блоки від краю
             // Ліва межа: якщо гравець на позиції 2 або менше, камера не рухається лівіше
@@ -996,7 +1152,6 @@
                 ...shuffledBio.slice(0, numBioWords),
                 ...shuffledCommon.slice(0, numCommonWords)
             ];
-            // </CHANGE>
             
             wordSearchFoundWords = [];
             wordSearchSelection = [];
@@ -1017,7 +1172,6 @@
                     }
                 }
             }
-            // </CHANGE>
             
             drawWordSearchGrid();
             drawWordList();
@@ -1037,7 +1191,6 @@
                 const dir = directions[Math.floor(Math.random() * directions.length)];
                 const startRow = Math.floor(Math.random() * 10);
                 const startCol = Math.floor(Math.random() * 10);
-                // </CHANGE>
                 
                 if (canPlaceWord(word, startRow, startCol, dir)) {
                     for (let i = 0; i < word.length; i++) {
@@ -1059,7 +1212,6 @@
                 if (row < 0 || row >= 10 || col < 0 || col >= 10) {
                     return false;
                 }
-                // </CHANGE>
                 
                 if (wordSearchGrid[row][col] !== '' && wordSearchGrid[row][col] !== word[i]) {
                     return false;
@@ -1087,7 +1239,6 @@
                     grid.appendChild(cell);
                 }
             }
-            // </CHANGE>
         }
 
         function startSelection(e) {
@@ -1256,6 +1407,8 @@
             evadeTimeout = setTimeout(() => {
                 evadeActive = false;
                 document.removeEventListener('mousemove', trackMouseGlobal);
+                // Видалено: btnHuman.style.left = startLeft + "px";
+                // Видалено: btnHuman.style.top = startTop + 100 + "px";
             }, 10000);
             // </CHANGE>
         }
@@ -1313,13 +1466,16 @@
         };
 
         window.addEventListener('DOMContentLoaded', function() {
+            blurBackground(); // Блюрити фон коли з'являється спінер
             setTimeout(() => {
                 document.getElementById('spinnerBox').style.display = 'none';
                 document.getElementById('captchaFake').style.display = 'flex';
             }, 2000);
         });
+        // </CHANGE>
 
         document.getElementById('captchaFake').addEventListener('click', function() {
+            blurBackground();
             document.getElementById('captchaModal').style.display = 'flex';
             playerPos = findStart();
             document.getElementById('captchaSuccess').style.display = 'none';
@@ -1327,8 +1483,7 @@
             drawMaze();
             isModalActive = true;
         });
-
-        let isModalActive = false;
+        // </CHANGE>
 
         window.addEventListener('keydown', function(e) {
             if (!isModalActive || document.getElementById('captchaModal').style.display !== 'flex') return;
