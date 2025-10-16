@@ -15,7 +15,6 @@
             font-family: Arial, sans-serif;
         }
         
-        /* Added header styles */
         .google-header {
             position: fixed;
             top: 0;
@@ -25,6 +24,11 @@
             gap: 15px;
             padding: 15px 20px;
             z-index: 1;
+            transition: filter 1s ease;
+        }
+        
+        .google-header.blurred {
+            filter: blur(10px);
         }
         
         .google-header a {
@@ -79,9 +83,7 @@
         .google-user-icon:hover {
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
-        /* </CHANGE> */
         
-        /* Added footer styles */
         .google-footer {
             position: fixed;
             bottom: 0;
@@ -89,6 +91,11 @@
             width: 100%;
             background: #f2f2f2;
             z-index: 1;
+            transition: filter 1s ease;
+        }
+        
+        .google-footer.blurred {
+            filter: blur(10px);
         }
         
         .footer-country {
@@ -121,7 +128,6 @@
         .footer-links a:hover {
             text-decoration: underline;
         }
-        /* </CHANGE> */
         
         .google-background {
             position: fixed;
@@ -187,7 +193,6 @@
             color: #202124;
         }
         
-        /* Added styles for search box action buttons */
         .search-actions {
             display: flex;
             align-items: center;
@@ -217,7 +222,6 @@
             width: 20px;
             height: 20px;
         }
-        /* </CHANGE> */
         
         .google-buttons {
             display: flex;
@@ -261,7 +265,6 @@
             100% { transform: rotate(360deg);}
         }
         
-        /* Added warning text styles */
         .warning-text {
             display: none;
             font-size: 16px;
@@ -271,7 +274,6 @@
             text-align: center;
             z-index: 8;
         }
-        /* </CHANGE> */
         
         .captcha-fake {
             display: flex;
@@ -580,14 +582,13 @@
             У
         </div>
     </div>
-     </CHANGE> 
     
     <div class="google-background">
         <div class="google-logo">
             <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
         </div>
         <div class="google-search-box">
-            <svg class="search-icon" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <svg class="search-icon" focusable="false" xmlns="http://www.w3.org/2000/svg">
                 <path fill="#9aa0a6" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
             </svg>
             <input type="text" class="google-search-input" />
@@ -637,14 +638,10 @@
             </div>
         </div>
     </div>
-     </CHANGE> 
     
     <div id="mainContainer">
         <div id="spinnerBox" style="display:none;">
             <div class="spinner"></div>
-        </div>
-        <div id="warningText" class="warning-text">
-            Ми підозрюємо, що ви робот. Пройдіть перевірку.
         </div>
         <div id="captchaFake" class="captcha-fake" tabindex="0" style="display:none;">
             <div id="captchaCheckbox" class="captcha-checkbox"></div>
@@ -923,12 +920,42 @@
             document.getElementById('failCounter4').textContent = `Помилок: ${failCount4}`;
         }
 
+        function returnToMaze() {
+            // Close all modals
+            document.getElementById('captchaModal').style.display = 'none';
+            document.getElementById('captchaSimonModal').style.display = 'none';
+            document.getElementById('captchaTicTacToeModal').style.display = 'none';
+            document.getElementById('captchaWordSearchModal').style.display = 'none';
+            document.getElementById('captchaFinalModal').style.display = 'none';
+            
+            // Reset game states
+            simonActive = false;
+            tttGameActive = false;
+            evadeActive = false;
+            if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
+            if(evadeTimeout) clearTimeout(evadeTimeout);
+            document.removeEventListener('mousemove', trackMouseGlobal);
+            
+            // Reset maze
+            mazeData = generateMaze(MAZE_SIZE, MAZE_SIZE);
+            playerPos = findStart();
+            document.getElementById('captchaSuccess').style.display = 'none';
+            document.getElementById('captchaFail').style.display = 'none';
+            
+            // Open maze modal
+            setTimeout(() => {
+                document.getElementById('captchaModal').style.display = 'flex';
+                drawMaze();
+                isModalActive = true;
+            }, 500);
+        }
+
         function failCaptcha() {
             failCount1++;
             updateFailCounters();
             document.getElementById('captchaFail').style.display = 'block';
             setTimeout(() => {
-                location.reload();
+                returnToMaze();
             }, 1200);
         }
 
@@ -937,7 +964,7 @@
             updateFailCounters();
             document.getElementById('simonFail').style.display = 'block';
             setTimeout(() => {
-                location.reload();
+                returnToMaze();
             }, 1200);
         }
 
@@ -1192,7 +1219,7 @@
                 document.getElementById('tttFail').textContent = "Більше немає спроб! Спробуйте пізніше.";
                 document.getElementById('tttRestart').style.display = 'none';
                 setTimeout(() => {
-                    location.reload();
+                    returnToMaze();
                 }, 2000);
             }
         }
@@ -1508,6 +1535,7 @@
 
         let evadeActive = false, evadeTimeout = null, evadeAnimFrame = null;
         let btnHuman, startLeft, startTop;
+        let evadeHasBeenActivated = false;
 
         function openFinalModal() {
             document.getElementById('captchaFinalModal').style.display = 'flex';
@@ -1522,14 +1550,15 @@
             btnHuman.style.top = startTop + "px";
             btnHuman.style.transform = "";
             evadeActive = false;
+            evadeHasBeenActivated = false;
             
-            // Add hover listener to activate evade
             btnHuman.addEventListener('mouseenter', activateEvade);
         }
 
         function activateEvade() {
-            if (evadeActive) return; // Already active
+            if (evadeActive || evadeHasBeenActivated) return;
             evadeActive = true;
+            evadeHasBeenActivated = true;
             
             document.addEventListener('mousemove', trackMouseGlobal);
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
@@ -1539,6 +1568,8 @@
             evadeTimeout = setTimeout(() => {
                 evadeActive = false;
                 document.removeEventListener('mousemove', trackMouseGlobal);
+                if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
+                evadeAnimFrame = null;
             }, 10000);
         }
 
@@ -1549,7 +1580,11 @@
         }
 
         function evadeMoveGlobal() {
-            if (!evadeActive) return;
+            if (!evadeActive) {
+                if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
+                evadeAnimFrame = null;
+                return;
+            }
             let curLeft = parseFloat(btnHuman.style.left);
             let curTop = parseFloat(btnHuman.style.top);
 
@@ -1584,7 +1619,7 @@
         });
 
         document.getElementById('btnRobot').addEventListener('click', function() {
-            location.reload();
+            returnToMaze();
         });
 
         document.getElementById('closeFinal').onclick = function() {
@@ -1601,10 +1636,11 @@
                 hasStarted = true;
                 const googleBg = document.querySelector('.google-background');
                 googleBg.classList.add('blurred');
+                document.querySelector('.google-header').classList.add('blurred');
+                document.querySelector('.google-footer').classList.add('blurred');
                 document.getElementById('spinnerBox').style.display = 'flex';
                 setTimeout(() => {
                     document.getElementById('spinnerBox').style.display = 'none';
-                    document.getElementById('warningText').style.display = 'block';
                     document.getElementById('captchaFake').style.display = 'flex';
                 }, 2000);
             }
