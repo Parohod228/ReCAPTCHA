@@ -10,11 +10,31 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            background: #fff;
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
         
+        /* Added scale transform to prevent white edges when blurred */
+        .background-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.postimg.cc/3x0y1KTx/tessellation-patterns-multi-1024x576.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            transition: filter 1s ease, transform 1s ease;
+        }
+        
+        .background-layer.blurred {
+            filter: blur(10px);
+            transform: scale(1.05);
+        }
+        
+        /* Made header links white and added hover effect */
         .google-header {
             position: fixed;
             top: 0;
@@ -27,21 +47,20 @@
             transition: filter 1s ease;
         }
         
+        /* Added blur effect for header when blurred class is applied */
         .google-header.blurred {
             filter: blur(10px);
         }
         
         .google-header a {
-            color: #222;
+            color: #fff;
             text-decoration: none;
             font-size: 13px;
-            opacity: 0.85;
             transition: opacity 0.2s;
         }
         
         .google-header a:hover {
-            opacity: 1;
-            text-decoration: underline;
+            opacity: 0.8;
         }
         
         .google-apps-icon {
@@ -62,7 +81,7 @@
         .google-apps-icon svg {
             width: 20px;
             height: 20px;
-            fill: #5f6368;
+            fill: #fff; /* Changed from #5f6368 to #fff to make 9 dots white */
         }
         
         .google-user-icon {
@@ -82,51 +101,6 @@
         
         .google-user-icon:hover {
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-        
-        .google-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #f2f2f2;
-            z-index: 1;
-            transition: filter 1s ease;
-        }
-        
-        .google-footer.blurred {
-            filter: blur(10px);
-        }
-        
-        .footer-country {
-            padding: 15px 30px;
-            border-bottom: 1px solid #dadce0;
-            color: #70757a;
-            font-size: 15px;
-        }
-        
-        .footer-links {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 20px;
-            flex-wrap: wrap;
-        }
-        
-        .footer-left, .footer-right {
-            display: flex;
-            gap: 27px;
-            flex-wrap: wrap;
-        }
-        
-        .footer-links a {
-            color: #70757a;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
-        
-        .footer-links a:hover {
-            text-decoration: underline;
         }
         
         .google-background {
@@ -154,12 +128,12 @@
             letter-spacing: -2px;
         }
         
-        .google-logo span:nth-child(1) { color: #4285f4; }
-        .google-logo span:nth-child(2) { color: #ea4335; }
-        .google-logo span:nth-child(3) { color: #fbbc04; }
-        .google-logo span:nth-child(4) { color: #4285f4; }
-        .google-logo span:nth-child(5) { color: #34a853; }
-        .google-logo span:nth-child(6) { color: #ea4335; }
+        .google-logo span:nth-child(1) { color: #fff; }
+        .google-logo span:nth-child(2) { color: #fff; }
+        .google-logo span:nth-child(3) { color: #fff; }
+        .google-logo span:nth-child(4) { color: #fff; }
+        .google-logo span:nth-child(5) { color: #fff; }
+        .google-logo span:nth-child(6) { color: #fff; }
         
         .google-search-box {
             width: 584px;
@@ -172,6 +146,7 @@
             padding: 0 14px;
             box-shadow: 0 1px 6px rgba(32,33,36,.28);
             margin-bottom: 30px;
+            background: #fff;
         }
         
         .google-search-box:hover {
@@ -570,6 +545,9 @@
     </style>
 </head>
 <body>
+    <!-- Added background layer div -->
+    <div class="background-layer"></div>
+    
     <div class="google-header">
         <a href="#">Gmail</a>
         <a href="#">Зображення</a>
@@ -619,23 +597,6 @@
         <div class="google-buttons">
             <button class="google-btn">Пошук Google</button>
             <button class="google-btn">Мені пощастить</button>
-        </div>
-    </div>
-    
-    <div class="google-footer">
-        <div class="footer-country">Україна</div>
-        <div class="footer-links">
-            <div class="footer-left">
-                <a href="#">Про Google</a>
-                <a href="#">Реклама</a>
-                <a href="#">Для бізнесу</a>
-                <a href="#">Як працює Пошук</a>
-            </div>
-            <div class="footer-right">
-                <a href="#">Конфіденційність</a>
-                <a href="#">Умови</a>
-                <a href="#">Налаштування</a>
-            </div>
         </div>
     </div>
     
@@ -1634,10 +1595,11 @@
         document.addEventListener('click', function(e) {
             if (!hasStarted) {
                 hasStarted = true;
+                document.querySelector('.background-layer').classList.add('blurred');
                 const googleBg = document.querySelector('.google-background');
                 googleBg.classList.add('blurred');
                 document.querySelector('.google-header').classList.add('blurred');
-                document.querySelector('.google-footer').classList.add('blurred');
+                
                 document.getElementById('spinnerBox').style.display = 'flex';
                 setTimeout(() => {
                     document.getElementById('spinnerBox').style.display = 'none';
