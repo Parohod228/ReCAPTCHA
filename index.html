@@ -468,20 +468,22 @@
             margin: 0 auto;
         }
         .word-search-grid {
+            /* increased grid from 10x10 to 15x15 */
             display: grid;
-            grid-template-columns: repeat(10, 32px);
-            grid-template-rows: repeat(10, 32px);
+            grid-template-columns: repeat(15, 21px);
+            grid-template-rows: repeat(15, 21px);
             gap: 2px;
             position: relative;
             user-select: none;
         }
         .word-search-cell {
-            width: 32px;
-            height: 32px;
+            /* reduced cell size from 32px to 21px to maintain same visual size */
+            width: 21px;
+            height: 21px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
             color: #222;
             background: #f5f5f5;
@@ -742,6 +744,16 @@
         
         function generateMaze(width, height) {
             let maze = Array.from({length: height}, () => Array(width).fill(0));
+            
+            for (let i = 0; i < width; i++) {
+                maze[0][i] = 0; // top wall
+                maze[height-1][i] = 0; // bottom wall
+            }
+            for (let i = 0; i < height; i++) {
+                maze[i][0] = 0; // left wall
+                maze[i][width-1] = 0; // right wall
+            }
+            
             function carve(x, y) {
                 maze[y][x] = 1;
                 const dirs = [
@@ -749,7 +761,7 @@
                 ].sort(() => Math.random() - 0.5);
                 for (const [dx, dy] of dirs) {
                     const nx = x + dx, ny = y + dy;
-                    if (ny > 0 && ny < height && nx > 0 && nx < width && maze[ny][nx] === 0) {
+                    if (ny > 0 && ny < height-1 && nx > 0 && nx < width-1 && maze[ny][nx] === 0) {
                         maze[y + dy/2][x + dx/2] = 1;
                         carve(nx, ny);
                     }
@@ -761,7 +773,7 @@
             return maze;
         }
 
-        const MAZE_SIZE = 21;
+        const MAZE_SIZE = 33; // changed maze size from 34 to 33
         let mazeData = generateMaze(MAZE_SIZE, MAZE_SIZE);
         let playerPos = {x:1, y:1};
 
@@ -963,7 +975,7 @@
             for (let idx of simonSequence) clickCounts[idx]++;
             if (simonSequence.length > 1) {
                 let totalClips = simonSequence.length;
-                if (totalClips >= 6) {
+                if (totalClips >= 9) {
                     document.getElementById('simonStatus').textContent = "Ви перемогли!";
                     document.getElementById('simonStatus').style.display = 'block';
                     simonActive = false;
@@ -1014,7 +1026,7 @@
                             let clickCounts = Array(9).fill(0);
                             for (let idx of simonSequence) clickCounts[idx]++;
                             let totalClips = simonSequence.length;
-                            if (totalClips >= 6) {
+                            if (totalClips >= 9) {
                                 document.getElementById('simonStatus').textContent = "Ви перемогли!";
                                 document.getElementById('simonStatus').style.display = 'block';
                                 simonActive = false;
@@ -1268,7 +1280,7 @@
         }
         
         function initWordSearch() {
-            wordSearchGrid = Array(10).fill(null).map(() => Array(10).fill(''));
+            wordSearchGrid = Array(15).fill(null).map(() => Array(15).fill(''));
             
             const shuffledBio = [...biologicalTerms].sort(() => Math.random() - 0.5);
             const shuffledCommon = [...commonWords].sort(() => Math.random() - 0.5);
@@ -1292,8 +1304,8 @@
                 placeWord(word);
             }
             
-            for (let i = 0; i < 10; i++) {
-                for (let j = 0; j < 10; j++) {
+            for (let i = 0; i < 15; i++) {
+                for (let j = 0; j < 15; j++) {
                     if (wordSearchGrid[i][j] === '') {
                         wordSearchGrid[i][j] = getRandomLetter();
                     }
@@ -1316,8 +1328,8 @@
             
             while (!placed && attempts < 100) {
                 const dir = directions[Math.floor(Math.random() * directions.length)];
-                const startRow = Math.floor(Math.random() * 10);
-                const startCol = Math.floor(Math.random() * 10);
+                const startRow = Math.floor(Math.random() * 15);
+                const startCol = Math.floor(Math.random() * 15);
                 
                 if (canPlaceWord(word, startRow, startCol, dir)) {
                     for (let i = 0; i < word.length; i++) {
@@ -1336,7 +1348,7 @@
                 const row = startRow + i * dir.dy;
                 const col = startCol + i * dir.dx;
                 
-                if (row < 0 || row >= 10 || col < 0 || col >= 10) {
+                if (row < 0 || row >= 15 || col < 0 || col >= 15) {
                     return false;
                 }
                 
@@ -1351,8 +1363,8 @@
             const grid = document.getElementById('wordSearchGrid');
             grid.innerHTML = '';
             
-            for (let i = 0; i < 10; i++) {
-                for (let j = 0; j < 10; j++) {
+            for (let i = 0; i < 15; i++) {
+                for (let j = 0; j < 15; j++) {
                     const cell = document.createElement('div');
                     cell.className = 'word-search-cell';
                     cell.textContent = wordSearchGrid[i][j];
