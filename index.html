@@ -53,7 +53,7 @@
         }
         
         .google-header a {
-            color: #fff;
+            color: #202124; /* ЗМІНЕНО: з #fff на темний для білого тла */
             text-decoration: none;
             font-size: 13px;
             transition: opacity 0.2s;
@@ -81,7 +81,7 @@
         .google-apps-icon svg {
             width: 20px;
             height: 20px;
-            fill: #fff; /* Changed from #5f6368 to #fff to make 9 dots white */
+            fill: #5f6368; /* ЗМІНЕНО: з #fff на сірий для білого тла */
         }
         
         .google-user-icon {
@@ -115,6 +115,7 @@
             justify-content: center;
             z-index: 0;
             transition: filter 1s ease;
+            background: #fff; /* ДОДАНО: білий фон за вашим запитом */
         }
         
         .google-background.blurred {
@@ -128,12 +129,13 @@
             letter-spacing: -2px;
         }
         
-        .google-logo span:nth-child(1) { color: #fff; }
-        .google-logo span:nth-child(2) { color: #fff; }
-        .google-logo span:nth-child(3) { color: #fff; }
-        .google-logo span:nth-child(4) { color: #fff; }
-        .google-logo span:nth-child(5) { color: #fff; }
-        .google-logo span:nth-child(6) { color: #fff; }
+        /* ЗМІНЕНО: Кольори логотипа для білого тла */
+        .google-logo span:nth-child(1) { color: #4285f4; }
+        .google-logo span:nth-child(2) { color: #ea4335; }
+        .google-logo span:nth-child(3) { color: #fbbc05; }
+        .google-logo span:nth-child(4) { color: #4285f4; }
+        .google-logo span:nth-child(5) { color: #34a853; }
+        .google-logo span:nth-child(6) { color: #ea4335; }
         
         .google-search-box {
             width: 584px;
@@ -547,7 +549,6 @@
     </style>
 </head>
 <body>
-    <!-- Added background layer div -->
     <div class="background-layer"></div>
     
     <div class="google-header">
@@ -773,7 +774,7 @@
             return maze;
         }
 
-        const MAZE_SIZE = 33; // changed maze size from 34 to 33
+        const MAZE_SIZE = 19; // changed maze size from 34 to 33
         let mazeData = generateMaze(MAZE_SIZE, MAZE_SIZE);
         let playerPos = {x:1, y:1};
 
@@ -1141,10 +1142,18 @@
             drawTicTacToe();
             if(checkTicTacToeWin(tttAI)) {
                 tttGameActive = false;
-                document.getElementById('tttFail').textContent = `ШІ переміг! (${tttHumanWins}/${tttAttempts} перемог)`;
+                
+                // *** ЗМІНЕНО ЗА ВАШИМ ЗАПИТОМ ***
+                // Замість перезапуску, повертаємось до лабіринту
+                failCount3++; 
+                updateFailCounters();
+                document.getElementById('tttFail').textContent = `ШІ переміг! Повернення до лабіринту...`;
                 document.getElementById('tttFail').style.display = 'block';
-                document.getElementById('tttRestart').style.display = 'block';
-                checkTicTacToeEnd();
+                setTimeout(() => {
+                    returnToMaze(); // Повернення до лабіринту
+                }, 2000); // 
+                // *** КІНЕЦЬ ЗМІНИ ***
+
             } else if(tttBoard.every(cell => cell !== "")) {
                 tttGameActive = false;
                 document.getElementById('tttStatus').textContent = "Нічия!";
@@ -1186,15 +1195,10 @@
                     document.getElementById('captchaTicTacToeModal').style.display = 'none';
                     openWordSearchGame();
                 }, 1500);
-            } else if(tttAttempts >= 3) {
-                failCount3++;
-                updateFailCounters();
-                document.getElementById('tttFail').textContent = "Більше немає спроб! Спробуйте пізніше.";
-                document.getElementById('tttRestart').style.display = 'none';
-                setTimeout(() => {
-                    returnToMaze();
-                }, 2000);
             }
+            // *** ЗМІНЕНО ЗА ВАШИМ ЗАПИТОМ ***
+            // Блок 'else if (tttAttempts >= 3)' видалено,
+            // оскільки aiMove() тепер обробляє всі програші.
         }
 
         document.getElementById('tttRestart').onclick = function() {
@@ -1423,6 +1427,7 @@
             const selectedWord = wordSearchSelection.map(cell => cell.letter).join('');
             
             if (wordSearchWords.includes(selectedWord) && !wordSearchFoundWords.includes(selectedWord)) {
+                // Успіх: знайдено нове слово
                 wordSearchFoundWords.push(selectedWord);
                 const color = wordSearchWordColors[selectedWord];
                 
@@ -1437,8 +1442,22 @@
                         openFinalModal();
                     }, 1500);
                 }
+            } else if (wordSearchFoundWords.includes(selectedWord)) {
+                // Слово правильне, але вже знайдене
+                 clearTemporaryHighlight();
             } else {
-                clearTemporaryHighlight();
+                // *** ЗМІНЕНО ЗА ВАШИМ ЗАПИТОМ ***
+                // Неправильне слово - повернення до лабіринту
+                failCount4++; 
+                updateFailCounters();
+                document.getElementById('wordSearchFail').textContent = "Неправильне слово! Повернення до лабіринту...";
+                document.getElementById('wordSearchFail').style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('wordSearchFail').style.display = 'none'; // ДОДАНО: ховаємо повідомлення
+                    returnToMaze(); // Повернення до лабіринту
+                }, 2000);
+                // *** КІНЕЦЬ ЗМІНИ ***
             }
             
             wordSearchSelection = [];
@@ -1513,15 +1532,25 @@
         function openFinalModal() {
             document.getElementById('captchaFinalModal').style.display = 'flex';
             btnHuman = document.getElementById('btnHuman');
-            btnHuman.style.position = "fixed";
-            btnHuman.style.left = "50%";
-            btnHuman.style.top = "50%";
-            btnHuman.style.transform = "translate(-50%, -50%)";
-            startLeft = (window.innerWidth - btnHuman.offsetWidth) / 2;
-            startTop = (window.innerHeight - btnHuman.offsetHeight) / 2;
+            
+            // *** ЗМІНЕНО ЗА ВАШИМ ЗАПИТОМ ***
+            // Позиціонуємо кнопку "Я людина" відносно кнопки "Я робот"
+            const robotBtn = document.getElementById('btnRobot');
+            const robotRect = robotBtn.getBoundingClientRect(); // Отримуємо позицію кнопки робота
+
+            // Встановлюємо 'fixed', щоб гра в ухиляння працювала відносно екрану
+            btnHuman.style.position = "fixed"; 
+            
+            // 'gap' у flex-контейнері = 18px.
+            // Позиціонуємо 'btnHuman' на 18px нижче 'btnRobot'
+            startLeft = robotRect.left; 
+            startTop = robotRect.bottom + 18; 
+
             btnHuman.style.left = startLeft + "px";
             btnHuman.style.top = startTop + "px";
-            btnHuman.style.transform = "";
+            btnHuman.style.transform = ""; // Скидаємо transform
+            // *** КІНЕЦЬ ЗМІНИ ***
+
             evadeActive = false;
             evadeHasBeenActivated = false;
             
