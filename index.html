@@ -1274,6 +1274,19 @@
             'КЛІТИНА', 'СИНАПС', 'МУТАЦІЯ'
         ].filter(word => word.length >= 4 && word.length <= 6);
         
+        // *** СПИСОК СЛІВ-ВІДВОЛІКАЧІВ (Distractor Words) - ЗАМІНЕНО НА ЛАЙКУ ТА ВУЛЬГАРНІ СЛОВА ***
+        const distractorWords = [
+            'СУКА', 'БЛЯДЬ', 'ХУЙНЯ', 'ПИЗДА', 'ГОВНО', 
+            'МУДИЛО', 'ЇБАЛО', 'ХУЙЛО', 'ДУПА', 'ЖОПА', 
+            'ЄБАТИ', 'ШЛЮХА', 'ДІРКА', 'МАНДА', 'ОЧКО', 
+            'ПИЗДЕЦ', 'ЗАЛУПА', 'ТРАХАТИ', 'КРЕТИН', 'ЇБАНА',
+            'ПІДОРА', 'ГАНДОН', 'БЛЯДОТА', 'ГАВНО', 'МУДАК', 
+            'ГИДОТА', 'СМЕРД', 'ПІХВА', 'АХУЙ', 'ШЛЮХА',
+            'ПІДАРА', 'ЛЯРВА', 'ЇБАШ', 'ХУЄТА', 'ЄБЛО',
+            'СОСАТИ', 'СУЧКА', 'ТЬОЛКА', 'ПУТАНА', 'ПИЗДА' 
+        ].filter(word => word.length >= 4 && word.length <= 6).map(word => word.toUpperCase());
+        // *** КІНЕЦЬ СПИСКУ ***
+
         function getRandomLetter() {
             return ukrainianLetters[Math.floor(Math.random() * ukrainianLetters.length)];
         }
@@ -1304,10 +1317,22 @@
                 wordSearchWordColors[word] = brightColors[index % brightColors.length];
             });
             
+            // 1. Розміщення ЦІЛЬОВИХ СЛІВ
             for (let word of wordSearchWords) {
                 placeWord(word);
             }
             
+            // *** ПОЧАТОК ЗМІН: Розміщення СЛІВ-ВІДВОЛІКАЧІВ ***
+            const numDistractors = 10; // Кількість спроб розмістити відволікачі
+            const allDistractors = [...distractorWords].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < numDistractors; i++) {
+                // Використовуємо ту саму логіку placeWord, щоб розмістити відволікачі
+                // вільними місцями або на буквах, які збігаються.
+                placeWord(allDistractors[i % allDistractors.length]); 
+            }
+            // *** КІНЕЦЬ ЗМІН ***
+
+            // 3. Заповнення решти рандомними літерами
             for (let i = 0; i < 15; i++) {
                 for (let j = 0; j < 15; j++) {
                     if (wordSearchGrid[i][j] === '') {
@@ -1323,8 +1348,8 @@
         
         function placeWord(word) {
             const directions = [
-                {dx: 1, dy: 0},
-                {dx: 0, dy: 1},
+                {dx: 1, dy: 0}, // Горизонтально
+                {dx: 0, dy: 1}, // Вертикально
             ];
             
             let placed = false;
@@ -1688,6 +1713,34 @@
             document.getElementById('captchaModal').style.display = 'none';
             isModalActive = false;
         };
+
+        // *** ФУНКЦІЯ ДЛЯ ТЕСТУВАННЯ "ПОШУК СЛІВ" ***
+        /**
+         * Відкриває гру "Пошук слів" (Word Search Captcha) без необхідності проходити початкові етапи.
+         * Викликати в консолі браузера: openWordSearchForTesting()
+         */
+        window.openWordSearchForTesting = function() {
+            // 1. Імітація початкових ефектів
+            document.querySelector('.background-layer').classList.add('blurred');
+            document.querySelector('.google-background').classList.add('blurred');
+            document.querySelector('.google-header').classList.add('blurred');
+            
+            // 2. Імітація проходження спіннера
+            document.getElementById('spinnerBox').style.display = 'none';
+            document.getElementById('captchaFake').style.display = 'flex';
+            
+            // 3. Закриття всіх модальних вікон (на випадок, якщо щось було відкрито)
+            document.getElementById('captchaModal').style.display = 'none';
+            document.getElementById('captchaSimonModal').style.display = 'none';
+            document.getElementById('captchaTicTacToeModal').style.display = 'none';
+            
+            // 4. Відкриття гри "Пошук слів"
+            document.getElementById('captchaWordSearchModal').style.display = 'flex';
+            initWordSearch(); // Ініціалізація нової гри з відволікачами
+            
+            console.log("Гра 'Пошук слів' відкрито! Шукайте 5 цільових слів. Багато букв утворюють фальшиві слова.");
+        };
+        // *** КІНЕЦЬ ФУНКЦІЇ ДЛЯ ТЕСТУВАННЯ ***
     </script>
 </body>
 </html>
