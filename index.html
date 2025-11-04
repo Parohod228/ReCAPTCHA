@@ -1274,19 +1274,6 @@
             'КЛІТИНА', 'СИНАПС', 'МУТАЦІЯ'
         ].filter(word => word.length >= 4 && word.length <= 6);
         
-        // *** СПИСОК СЛІВ-ВІДВОЛІКАЧІВ (Distractor Words) - ЗАМІНЕНО НА ЛАЙКУ ТА ВУЛЬГАРНІ СЛОВА ***
-        const distractorWords = [
-            'СУКА', 'БЛЯДЬ', 'ХУЙНЯ', 'ПИЗДА', 'ГОВНО', 
-            'МУДИЛО', 'ЇБАЛО', 'ХУЙЛО', 'ДУПА', 'ЖОПА', 
-            'ЄБАТИ', 'ШЛЮХА', 'ДІРКА', 'МАНДА', 'ОЧКО', 
-            'ПИЗДЕЦ', 'ЗАЛУПА', 'ТРАХАТИ', 'КРЕТИН', 'ЇБАНА',
-            'ПІДОРА', 'ГАНДОН', 'БЛЯДОТА', 'ГАВНО', 'МУДАК', 
-            'ГИДОТА', 'СМЕРД', 'ПІХВА', 'АХУЙ', 'ШЛЮХА',
-            'ПІДАРА', 'ЛЯРВА', 'ЇБАШ', 'ХУЄТА', 'ЄБЛО',
-            'СОСАТИ', 'СУЧКА', 'ТЬОЛКА', 'ПУТАНА', 'ПИЗДА' 
-        ].filter(word => word.length >= 4 && word.length <= 6).map(word => word.toUpperCase());
-        // *** КІНЕЦЬ СПИСКУ ***
-
         function getRandomLetter() {
             return ukrainianLetters[Math.floor(Math.random() * ukrainianLetters.length)];
         }
@@ -1317,22 +1304,10 @@
                 wordSearchWordColors[word] = brightColors[index % brightColors.length];
             });
             
-            // 1. Розміщення ЦІЛЬОВИХ СЛІВ
             for (let word of wordSearchWords) {
                 placeWord(word);
             }
             
-            // *** ПОЧАТОК ЗМІН: Розміщення СЛІВ-ВІДВОЛІКАЧІВ ***
-            const numDistractors = 10; // Кількість спроб розмістити відволікачі
-            const allDistractors = [...distractorWords].sort(() => Math.random() - 0.5);
-            for (let i = 0; i < numDistractors; i++) {
-                // Використовуємо ту саму логіку placeWord, щоб розмістити відволікачі
-                // вільними місцями або на буквах, які збігаються.
-                placeWord(allDistractors[i % allDistractors.length]); 
-            }
-            // *** КІНЕЦЬ ЗМІН ***
-
-            // 3. Заповнення решти рандомними літерами
             for (let i = 0; i < 15; i++) {
                 for (let j = 0; j < 15; j++) {
                     if (wordSearchGrid[i][j] === '') {
@@ -1348,8 +1323,8 @@
         
         function placeWord(word) {
             const directions = [
-                {dx: 1, dy: 0}, // Горизонтально
-                {dx: 0, dy: 1}, // Вертикально
+                {dx: 1, dy: 0},
+                {dx: 0, dy: 1},
             ];
             
             let placed = false;
@@ -1582,6 +1557,12 @@
             btnHuman.addEventListener('mouseenter', activateEvade);
         }
 
+        let mousePosGlobal = {x: window.innerWidth/2, y: window.innerHeight/2};
+        function trackMouseGlobal(e) {
+            mousePosGlobal.x = e.clientX;
+            mousePosGlobal.y = e.clientY;
+        }
+
         function activateEvade() {
             if (evadeActive || evadeHasBeenActivated) return;
             evadeActive = true;
@@ -1598,12 +1579,6 @@
                 if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
                 evadeAnimFrame = null;
             }, 10000);
-        }
-
-        let mousePosGlobal = {x: window.innerWidth/2, y: window.innerHeight/2};
-        function trackMouseGlobal(e) {
-            mousePosGlobal.x = e.clientX;
-            mousePosGlobal.y = e.clientY;
         }
 
         function evadeMoveGlobal() {
@@ -1656,24 +1631,29 @@
             if(evadeAnimFrame) cancelAnimationFrame(evadeAnimFrame);
         };
 
-        let hasStarted = false;
+        // --- ПОЧАТОК ВИПРАВЛЕНОЇ ЛОГІКИ ДЛЯ УМОВНОГО ЗАПУСКУ ---
         
-        document.addEventListener('click', function(e) {
-            if (!hasStarted) {
-                hasStarted = true;
-                document.querySelector('.background-layer').classList.add('blurred');
-                const googleBg = document.querySelector('.google-background');
-                googleBg.classList.add('blurred');
-                document.querySelector('.google-header').classList.add('blurred');
-                
-                document.getElementById('spinnerBox').style.display = 'flex';
-                setTimeout(() => {
-                    document.getElementById('spinnerBox').style.display = 'none';
-                    document.getElementById('captchaFake').style.display = 'flex';
-                }, 2000);
-            }
-        });
+        let hasStarted = false;
+        let isModalActive = false; 
+        
+        // Функція для активації фону, спінера та фейк-CAPTCHA
+        function activateCaptchaScreen() {
+            if (hasStarted) return;
+            hasStarted = true;
+            
+            document.querySelector('.background-layer').classList.add('blurred');
+            const googleBg = document.querySelector('.google-background');
+            googleBg.classList.add('blurred');
+            document.querySelector('.google-header').classList.add('blurred');
 
+            document.getElementById('spinnerBox').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('spinnerBox').style.display = 'none';
+                document.getElementById('captchaFake').style.display = 'flex';
+            }, 2000);
+        }
+
+        // Клік на фейкову CAPTCHA відкриває лабіринт
         document.getElementById('captchaFake').addEventListener('click', function() {
             document.getElementById('captchaModal').style.display = 'flex';
             playerPos = findStart();
@@ -1683,7 +1663,47 @@
             isModalActive = true;
         });
 
-        let isModalActive = false;
+        // Ініціалізація при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', () => {
+            const search = window.location.search.toLowerCase();
+            const shouldShowFakeCaptcha = search.includes('window');
+
+            if (shouldShowFakeCaptcha) {
+                // Вмикаємо розмиття
+                document.querySelector('.background-layer').classList.add('blurred');
+                document.querySelector('.google-background').classList.add('blurred');
+                document.querySelector('.google-header').classList.add('blurred');
+
+                // Показуємо спінер, потім фейкову капчу
+                document.getElementById('spinnerBox').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('spinnerBox').style.display = 'none';
+                    document.getElementById('captchaFake').style.display = 'flex';
+                }, 2000);
+            } else {
+                // Нормальний потік: чекаємо на перший клік для активації
+                document.addEventListener('click', function(e) {
+                    if (!hasStarted) {
+                        if (e.target.closest('a') || e.target.closest('.google-header a') || e.target.closest('.search-action-btn') || e.target.closest('.google-btn')) {
+                            // Ігноруємо кліки по функціональним елементам
+                        } else {
+                            activateCaptchaScreen();
+                        }
+                    }
+                });
+                
+                // Також активуємо при кліку на кнопки пошуку, якщо capcha ще не запущена
+                document.querySelectorAll('.google-search-box, .google-buttons button').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        if (!hasStarted) {
+                            activateCaptchaScreen();
+                        }
+                    });
+                });
+            }
+        });
+        
+        // --- КІНЕЦЬ ВИПРАВЛЕНОЇ ЛОГІКИ ---
 
         window.addEventListener('keydown', function(e) {
             if (!isModalActive || document.getElementById('captchaModal').style.display !== 'flex') return;
@@ -1713,34 +1733,6 @@
             document.getElementById('captchaModal').style.display = 'none';
             isModalActive = false;
         };
-
-        // *** ФУНКЦІЯ ДЛЯ ТЕСТУВАННЯ "ПОШУК СЛІВ" ***
-        /**
-         * Відкриває гру "Пошук слів" (Word Search Captcha) без необхідності проходити початкові етапи.
-         * Викликати в консолі браузера: openWordSearchForTesting()
-         */
-        window.openWordSearchForTesting = function() {
-            // 1. Імітація початкових ефектів
-            document.querySelector('.background-layer').classList.add('blurred');
-            document.querySelector('.google-background').classList.add('blurred');
-            document.querySelector('.google-header').classList.add('blurred');
-            
-            // 2. Імітація проходження спіннера
-            document.getElementById('spinnerBox').style.display = 'none';
-            document.getElementById('captchaFake').style.display = 'flex';
-            
-            // 3. Закриття всіх модальних вікон (на випадок, якщо щось було відкрито)
-            document.getElementById('captchaModal').style.display = 'none';
-            document.getElementById('captchaSimonModal').style.display = 'none';
-            document.getElementById('captchaTicTacToeModal').style.display = 'none';
-            
-            // 4. Відкриття гри "Пошук слів"
-            document.getElementById('captchaWordSearchModal').style.display = 'flex';
-            initWordSearch(); // Ініціалізація нової гри з відволікачами
-            
-            console.log("Гра 'Пошук слів' відкрито! Шукайте 5 цільових слів. Багато букв утворюють фальшиві слова.");
-        };
-        // *** КІНЕЦЬ ФУНКЦІЇ ДЛЯ ТЕСТУВАННЯ ***
     </script>
 </body>
 </html>
